@@ -3,6 +3,9 @@
  *  $def = column definition, array:
  *  "column_id"=>array(
  *    "name"=>
+ *    "format"=> (optional), define format of field using other values as 
+ *                           replacement patterns in [ ]
+ *                           e.g. "<a href='foo.html?id=[id]'>[name]</a>"
  *
  *  $data = table data, array:
  *  "row_id"=>array(
@@ -26,9 +29,21 @@ class table {
     $ret.="  </tr>\n";
 
     foreach($this->data as $rowid=>$row) {
+      $tr=array();
+      foreach($row as $k=>$v) {
+	$tr["[$k]"]=$v;
+      }
+
       $ret.="  <tr>\n";
       foreach($this->def as $k=>$v) {
-	$ret.="    <td class='$k'>{$row[$k]}</th>\n";
+	$value="";
+	if(isset($row[$k]))
+	  $value=$row[$k];
+
+	if($v['format'])
+	  $value=strtr($v['format'], $tr);
+
+	$ret.="    <td class='$k'>{$value}</th>\n";
       }
       $ret.="  </tr>\n";
     }
