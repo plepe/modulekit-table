@@ -56,6 +56,7 @@ class table {
   }
 
   function print_values($data, $tr, $def=null) {
+    $ret=array();
     if($def===null)
       $def=$this->def;
 
@@ -63,12 +64,12 @@ class table {
       $value=$data[$k];
 
       if($v['type']=="multiple")
-	$ret.=$this->print_values($data[$k], $tr, $v['columns']);
+	$ret=array_merge($ret, $this->print_values($data[$k], $tr, $v['columns']));
       else {
 	if($v['format'])
 	  $value=strtr($v['format'], $tr);
 
-	$ret.="    <td class='$k'>{$value}</td>\n";
+	$ret[]=array("class"=>$k, "value"=>$value);
       }
     }
 
@@ -80,19 +81,20 @@ class table {
       $maxlevel=$this->levels($def);
     if($def===null)
       $def=$this->def;
+    $ret=array();
 
     foreach($def as $k=>$v) {
       if($v['type']=="multiple") {
 	if($level==0) {
 	  $cols=$this->columns($v['columns']);
-	  $ret.="    <th class='$k' colspan='$cols'>{$v['name']}</th>\n";
+	  $ret[]=array("class"=>$k, "colspan"=>$cols, "value"=>$v['name']);
 	}
 	else
-	  $ret.=$this->print_headers($level-1, $v['columns'], $maxlevel-1);
+	  $ret=array_merge($ret, $this->print_headers($level-1, $v['columns'], $maxlevel-1));
       }
       else {
 	if($level==0) {
-	  $ret.="    <th class='$k' rowspan='$maxlevel'>{$v['name']}</th>\n";
+	  $ret[]=array("class"=>$k, "rowspan"=>$maxlevel, "value"=>$v['name']);
 	}
       }
     }
@@ -105,7 +107,14 @@ class table {
 
     for($l=0; $l<$this->levels(); $l++) {
       $ret.="  <tr>\n";
-      $ret.=$this->print_headers($l);
+      foreach($this->print_headers($l) as $elem) {
+	$ret.="<th class='{$elem['class']}'";
+	if(isset($elem['colspan']))
+	  $ret.=" colspan='{$elem['colspan']}'";
+	if(isset($elem['rowspan']))
+	  $ret.=" rowspan='{$elem['rowspan']}'";
+	$ret.=">{$elem['value']}</th>\n";
+      }
       $ret.="  </tr>\n";
     }
 
@@ -117,19 +126,9 @@ class table {
 
       $ret.="  <tr>\n";
 
-      $ret.=$this->print_values($row, $tr);
-//      foreach($this->def as $k=>$v) {
-//	$value="";
-//	if(isset($row[$k]))
-//	  $value=$row[$k];
-//
-//	if($v['format'])
-//	  $value=strtr($v['format'], $tr);
-//
-//	$ret.=$this->print_values($v, $tr);
-//	$ret.="    <td class='$k'>{$value}</td>\n";
-//      }
-      $ret.="  </tr>\n";
+      foreach($this->print_values($row, $tr) as $elem) {
+        $ret.="    <td class='{$elem['class']}'>{$elem['value']}</td>\n";
+      }
     }
 
     $ret.="</table>\n";
