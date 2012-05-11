@@ -17,6 +17,7 @@ class table {
   function __construct($def, $data) {
     $this->def=$def;
     $this->data=$data;
+    $this->mode="html";
   }
 
   function columns($def=null) {
@@ -96,43 +97,129 @@ class table {
 	if($level==0) {
 	  $ret[]=array("class"=>$k, "rowspan"=>$maxlevel, "value"=>$v['name']);
 	}
+	else {
+	  $ret[]=null;
+	}
       }
     }
 
     return $ret;
   }
 
-  function show() {
-    $ret="<table class='studidaten'>";
-
-    for($l=0; $l<$this->levels(); $l++) {
-      $ret.="  <tr>\n";
-      foreach($this->print_headers($l) as $elem) {
-	$ret.="<th class='{$elem['class']}'";
-	if(isset($elem['colspan']))
-	  $ret.=" colspan='{$elem['colspan']}'";
-	if(isset($elem['rowspan']))
-	  $ret.=" rowspan='{$elem['rowspan']}'";
-	$ret.=">{$elem['value']}</th>\n";
-      }
-      $ret.="  </tr>\n";
+  function show($mode="html") {
+    switch($mode) {
+      case "html":
+	$ret="<table class='studidaten'>";
+	break;
+      case "csv":
+	$csv_conf=array(",", "\"", "UTF-8");
+	$ret="";
+        break;
+      default:
+        print "Table: Invalid mode '$mode'\n";
     }
 
-    foreach($this->data as $rowid=>$row) {
+    for($l=0; $l<$this->levels(); $l++) {
+      switch($mode) {
+	case "html":
+	  $ret.="  <tr>\n";
+	  break;
+      }
+
+      foreach($this->print_headers($l) as $elem) {
+	switch($mode) {
+	  case "html":
+	    if($elem!=null) {
+	      $ret.="<th class='{$elem['class']}'";
+	      if(isset($elem['colspan']))
+		$ret.=" colspan='{$elem['colspan']}'";
+	      if(isset($elem['rowspan']))
+		$ret.=" rowspan='{$elem['rowspan']}'";
+	      $ret.=">{$elem['value']}</th>\n";
+	    }
+	    break;
+	  case "csv":
+	    $colspan=1;
+	    if(isset($elem['colspan']))
+	      $colspan=$elem['colspan'];
+
+	    for($i=0; $i<$colspan; $i++) {
+	      if($elem!=null)
+		$row[]=$elem['value'];
+	      else
+		$row[]="";
+	    }
+	}
+      }
+
+      switch($mode) {
+	case "html":
+	  $ret.="  </tr>\n";
+	  break;
+	case "csv":
+	  $ret.=printcsv($row, $csv_conf[0], $csv_conf[1]);
+	  $row=array();
+	  break;
+      }
+
+    }
+
+    foreach($this->data as $rowid=>$rowv) {
       $tr=array();
-      foreach($row as $k=>$v) {
+      foreach($rowv as $k=>$v) {
 	$tr["[$k]"]=$v;
       }
 
-      $ret.="  <tr>\n";
+      switch($mode) {
+	case "html":
+	  $ret.="  <tr>\n";
+	  break;
+      }
 
-      foreach($this->print_values($row, $tr) as $elem) {
-        $ret.="    <td class='{$elem['class']}'>{$elem['value']}</td>\n";
+      foreach($this->print_values($rowv, $tr) as $elem) {
+	switch($mode) {
+	  case "html":
+	    $ret.="    <td class='{$elem['class']}'>{$elem['value']}</td>\n";
+	    break;
+	  case "csv":
+	    $row[]=$elem['value'];
+	    break;
+	}
+      }
+
+      switch($mode) {
+	case "html":
+	  $ret.="  </tr>\n";
+	  break;
+	case "csv":
+	  $ret.=printcsv($row, $csv_conf[0], $csv_conf[1]);
+	  $row=array();
+	  break;
       }
     }
 
-    $ret.="</table>\n";
+    switch($mode) {
+      case "html":
+	$ret.="</table>\n";
+	break;
+    }
 
     return $ret;
   }
+}
+
+function printcsv($row, $delim=",", $encl="\"") {
+  $tr=array("&shy;"=>"", "\""=>"\\\"");
+  $l=array();
+
+  foreach($row as $r) {
+    $r=strtr($r, $tr);
+
+    if(is_numeric($r))
+      $l[]="{$r}";
+    else
+      $l[]="{$encl}{$r}{$encl}";
+  }
+
+  return implode($delim, $l)."\r\n";
 }
