@@ -18,6 +18,7 @@ class table {
     $this->def=$def;
     $this->data=$data;
     $this->mode="html";
+    $this->agg=array();
   }
 
   function columns($def=null) {
@@ -77,6 +78,67 @@ class table {
     return $ret;
   }
 
+  function print_aggregate($agg, $def=null) {
+    $ret=array();
+    if($def===null)
+      $def=$this->def;
+
+    foreach($def as $k=>$v) {
+      $value=$agg[$k];
+
+      if($v['type']=="multiple")
+	$ret=array_merge($ret, $this->print_aggregate($agg[$k], $v['columns']));
+      else {
+	$ret[]=array("class"=>$k, "value"=>$value);
+      }
+    }
+
+    return $ret;
+  }
+
+  function aggregate_check($def=null) {
+    if($def===null)
+      $def=$this->def;
+
+    foreach($def as $k=>$v) {
+      $value=$data[$k];
+
+      if($v['type']=="multiple") {
+	$ret=$this->aggregate_check($v['columns']);
+	if($ret)
+	  return true;
+      }
+      else {
+	$value=null;
+	if(isset($v['agg'])) {
+	  return true;
+	}
+      }
+    }
+
+    return false;
+  }
+
+  function aggregate_values($data, &$agg, $def=null) {
+    if($def===null)
+      $def=$this->def;
+
+    foreach($def as $k=>$v) {
+      $value=$data[$k];
+
+      if($v['type']=="multiple")
+	$this->aggregate_values($data[$k], &$agg[$k], $v['columns']);
+      else {
+	$value=null;
+	if(isset($v['agg'])) switch($v['agg']) {
+	  case "count_values":
+	    if(isset($data[$k])&&($data[$k]))
+	      $agg[$k]++;
+	}
+      }
+    }
+  }
+
   function print_headers($level, $def=null, $maxlevel=null) {
     if($maxlevel===null)
       $maxlevel=$this->levels($def);
@@ -106,7 +168,20 @@ class table {
     return $ret;
   }
 
+  function print_row($elem, $mode) {
+    switch($mode) {
+      case "html":
+	return "    <td class='{$elem['class']}'>{$elem['value']}</td>\n";
+	break;
+      case "csv":
+	return $elem['value'];
+	break;
+    }
+  }
+
   function show($mode="html") {
+    $has_aggregate=$this->aggregate_check();
+
     switch($mode) {
       case "html":
 	$ret="<table class='studidaten'>";
@@ -119,6 +194,7 @@ class table {
         print "Table: Invalid mode '$mode'\n";
     }
 
+    $agg=array();
     for($l=0; $l<$this->levels(); $l++) {
       switch($mode) {
 	case "html":
@@ -176,20 +252,38 @@ class table {
 	  break;
       }
 
+      if($has_aggregate) {
+	$this->aggregate_values($rowv, &$agg);
+      }
+
       foreach($this->print_values($rowv, $tr) as $elem) {
-	switch($mode) {
-	  case "html":
-	    $ret.="    <td class='{$elem['class']}'>{$elem['value']}</td>\n";
-	    break;
-	  case "csv":
-	    $row[]=$elem['value'];
-	    break;
-	}
+	$row[]=$this->print_row($elem, $mode);
       }
 
       switch($mode) {
 	case "html":
+	  $ret.=implode("\n", $row);
 	  $ret.="  </tr>\n";
+	  $row=array();
+	  break;
+	case "csv":
+	  $ret.=printcsv($row, $csv_conf[0], $csv_conf[1]);
+	  $row=array();
+	  break;
+      }
+    }
+
+    if($has_aggregate) {
+      foreach($this->print_aggregate($agg) as $elem) {
+	$row[]=$this->print_row($elem, $mode);
+      }
+
+      switch($mode) {
+	case "html":
+	  $ret.="  <tr class='agg'>\n";
+	  $ret.=implode("\n", $row);
+	  $ret.="  </tr>\n";
+	  $row=array();
 	  break;
 	case "csv":
 	  $ret.=printcsv($row, $csv_conf[0], $csv_conf[1]);
