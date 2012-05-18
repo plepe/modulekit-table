@@ -71,7 +71,12 @@ class table {
 	if($v['format'])
 	  $value=strtr($v['format'], $tr);
 
-	$ret[]=array("class"=>$k, "value"=>$value);
+	$r=array("class"=>$k, "value"=>$value);
+
+	if(isset($v['link']))
+	  $r['link']=strtr($v['link'], $tr);
+
+	$ret[]=$r;
       }
     }
 
@@ -171,7 +176,12 @@ class table {
   function print_row($elem, $mode) {
     switch($mode) {
       case "html":
-	return "    <td class='{$elem['class']}'>{$elem['value']}</td>\n";
+	$r=$elem['value'];
+
+	if(isset($elem['link']))
+	  $r="<a href='{$elem['link']}'>{$r}</a>";
+
+	return "    <td class='{$elem['class']}'>{$r}</td>\n";
 	break;
       case "csv":
 	return $elem['value'];
