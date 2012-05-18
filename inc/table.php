@@ -179,6 +179,18 @@ class table {
     }
   }
 
+  function build_tr($rowv, $prefix="") {
+    $tr=array();
+    foreach($rowv as $k=>$v) {
+      if(is_array($v))
+	$tr=array_merge($tr, $this->build_tr($v, "{$prefix}{$k}."));
+      else
+	$tr["[{$prefix}{$k}]"]=$v;
+    }
+
+    return $tr;
+  }
+
   function show($mode="html") {
     $has_aggregate=$this->aggregate_check();
 
@@ -241,10 +253,7 @@ class table {
     }
 
     foreach($this->data as $rowid=>$rowv) {
-      $tr=array();
-      foreach($rowv as $k=>$v) {
-	$tr["[$k]"]=$v;
-      }
+      $tr=$this->build_tr($rowv);
 
       switch($mode) {
 	case "html":
