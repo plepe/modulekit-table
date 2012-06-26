@@ -201,7 +201,7 @@ class table {
     return $tr;
   }
 
-  function show($mode="html") {
+  function show($mode="html", $param=null) {
     $has_aggregate=$this->aggregate_check();
 
     switch($mode) {
@@ -209,7 +209,10 @@ class table {
 	$ret="<table class='studidaten'>";
 	break;
       case "csv":
-	$csv_conf=array(",", "\"", "UTF-8");
+        if($param!=null)
+	  $csv_conf=$param;
+	else
+	  $csv_conf=array(",", "\"", "UTF-8");
 	$ret="";
         break;
       default:
