@@ -206,7 +206,7 @@ class table {
 
     switch($mode) {
       case "html":
-	$ret="<table class='studidaten'>";
+	$ret="<table class='table'>";
 	break;
       case "csv":
         if($param!=null)
