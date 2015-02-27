@@ -6,6 +6,9 @@ class table {
     $this->mode="html";
     $this->options = $options;
     $this->agg=array();
+
+    if(!array_key_exists('template_engine', $this->options))
+      $this->options['template_engine'] = 'internal';
   }
 
   function columns($def=null) {
@@ -44,6 +47,14 @@ class table {
     return $sub_levels+1;
   }
 
+  function replace($data, $tr, $format) {
+    switch($this->options['template_engine']) {
+      case "internal":
+      default:
+	return strtr($format, $tr);
+    }
+  }
+
   function print_values($data, $tr, $def=null) {
     $ret=array();
     if($def===null)
@@ -56,12 +67,12 @@ class table {
 	$ret=array_merge($ret, $this->print_values($data[$k], $tr, $v['columns']));
       else {
 	if($v['format'])
-	  $value=strtr($v['format'], $tr);
+	  $value = $this->replace($data, $tr, $v['format']);
 
 	$r=array("class"=>$k, "value"=>$value);
 
 	if(isset($v['link']))
-	  $r['link']=strtr($v['link'], $tr);
+	  $r['link'] = $this->replace($data, $tr, $v['link']);
 
 	$ret[]=$r;
       }
@@ -177,12 +188,16 @@ class table {
   }
 
   function build_tr($rowv, $prefix="") {
-    $tr=array();
-    foreach($rowv as $k=>$v) {
-      if(is_array($v))
-	$tr=array_merge($tr, $this->build_tr($v, "{$prefix}{$k}."));
-      else
-	$tr["[{$prefix}{$k}]"]=$v;
+    switch($this->options['template_engine']) {
+      case "internal":
+      default:
+	$tr=array();
+	foreach($rowv as $k=>$v) {
+	  if(is_array($v))
+	    $tr=array_merge($tr, $this->build_tr($v, "{$prefix}{$k}."));
+	  else
+	    $tr["[{$prefix}{$k}]"]=$v;
+	}
     }
 
     return $tr;

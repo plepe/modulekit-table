@@ -3,6 +3,12 @@ $table = new table($definition, $data, [$options]);
 print $table->show([$mode, [$param]])
 ```
 
+The following options are available:
+Key             | Description | Possible values (highlight = default)
+----------------|-------------|---------------------------------------
+template_engine | Which templating engine to use | **internal**
+
+
 ```php
 $def = column definition, array:
 "column_id"=>array(
