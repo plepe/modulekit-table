@@ -49,6 +49,8 @@ class table {
 
   function replace($data, $tr, $format) {
     switch($this->options['template_engine']) {
+      case "twig":
+        return twig_render_custom($format, $data);
       case "internal":
       default:
 	return strtr($format, $tr);
@@ -189,6 +191,8 @@ class table {
 
   function build_tr($rowv, $prefix="") {
     switch($this->options['template_engine']) {
+      case "twig":
+        break;
       case "internal":
       default:
 	$tr=array();
