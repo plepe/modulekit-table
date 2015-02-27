@@ -1,9 +1,10 @@
 <?
 class table {
-  function __construct($def, $data) {
+  function __construct($def, $data, $options=array()) {
     $this->def=$def;
     $this->data=$data;
     $this->mode="html";
+    $this->options = $options;
     $this->agg=array();
   }
 

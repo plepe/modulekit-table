@@ -1,5 +1,5 @@
 ```php
-$table = new table($definition, $data);
+$table = new table($definition, $data, [$options]);
 print $table->show([$mode, [$param]])
 ```
 
