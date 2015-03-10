@@ -46,3 +46,9 @@ $data = table data, array:
 $table = new table($def, $data, array("template_engine"=>"twig"));
 print $table->show();
 ```
+
+Testdata
+========
+Source for the test data in data.csv is the Magistratsabteilung 31 - Wiener
+Wasser; a list of historical fountains in Vienna. CC-BY-SA 3.0 AT.
+Source: https://www.data.gv.at/katalog/dataset/ce6baef9-42a8-4c09-8d50-99be6ac4ca9e
