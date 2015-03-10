@@ -132,7 +132,7 @@ class table {
       $value=$data[$k];
 
       if($v['type']=="multiple")
-	$this->aggregate_values($data[$k], &$agg[$k], $v['columns']);
+	$this->aggregate_values($data[$k], $agg[$k], $v['columns']);
       else {
 	$value=null;
 	if(isset($v['agg'])) switch($v['agg']) {
@@ -281,7 +281,7 @@ class table {
       }
 
       if($has_aggregate) {
-	$this->aggregate_values($rowv, &$agg);
+	$this->aggregate_values($rowv, $agg);
       }
 
       foreach($this->print_values($rowv, $tr) as $elem) {
