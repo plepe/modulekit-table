@@ -21,6 +21,8 @@ class table {
 	case "multiple":
 	  $columns+=$this->columns($v['columns']);
 	  break;
+	case "group":
+	  break;
 	default:
 	  $columns++;
       }
@@ -72,6 +74,9 @@ class table {
 	  $value = $this->replace($data, $tr, $v['format']);
 
 	$r=array("class"=>$k, "value"=>$value);
+
+	if(array_key_exists('type', $v))
+	  $r['type'] = $v['type'];
 
 	if(isset($v['link']))
 	  $r['link'] = $this->replace($data, $tr, $v['link']);
@@ -160,6 +165,8 @@ class table {
 	else
 	  $ret=array_merge($ret, $this->print_headers($level-1, $v['columns'], $maxlevel-1));
       }
+      elseif($v['type'] == "group") {
+      }
       else {
 	if($level==0) {
 	  $ret[]=array("class"=>$k, "rowspan"=>$maxlevel, "value"=>$v['name']);
@@ -226,6 +233,8 @@ class table {
     }
 
     $agg=array();
+    $rows = array();
+    $groups = array();
     for($l=0; $l<$this->levels(); $l++) {
       switch($mode) {
 	case "html":
@@ -274,30 +283,53 @@ class table {
     foreach($this->data as $rowid=>$rowv) {
       $tr=$this->build_tr($rowv);
 
-      switch($mode) {
-	case "html":
-	  $ret.="  <tr>\n";
-	  break;
-      }
-
       if($has_aggregate) {
 	$this->aggregate_values($rowv, $agg);
       }
 
+      $group = array();
+      $group_value = array();
+      $row = array();
       foreach($this->print_values($rowv, $tr) as $elem) {
-	$row[]=$this->print_row($elem, $mode);
+	if(array_key_exists('type', $elem) && in_array($elem['type'], array("group"))) {
+	  if($elem['type'] == "group")
+	    $group[] = $elem;
+	    $group_value[] = $elem['value'];
+	}
+	else
+	  $row[] = $this->print_row($elem, $mode);
       }
 
+      $group_value = implode("|", $group_value);
+      $groups[$group_value] = $group;
+      $rows[$group_value][] = $row;
+    }
+
+    foreach($rows as $group_value=>$group_rows) {
       switch($mode) {
 	case "html":
-	  $ret.=implode("\n", $row);
+	  $ret.="  <tr class='group'>\n";
+	  $ret.="<td colspan='". sizeof($group_rows[0]) ."'>{$group_value}</td>";
 	  $ret.="  </tr>\n";
-	  $row=array();
 	  break;
 	case "csv":
-	  $ret.=printcsv($row, $csv_conf[0], $csv_conf[1]);
-	  $row=array();
+	  $ret.=printcsv(array($group_value), $csv_conf[0], $csv_conf[1]);
 	  break;
+      }
+
+      foreach($group_rows as $row) {
+	switch($mode) {
+	  case "html":
+	    $ret.="  <tr>\n";
+	    $ret.=implode("\n", $row);
+	    $ret.="  </tr>\n";
+	    $row=array();
+	    break;
+	  case "csv":
+	    $ret.=printcsv($row, $csv_conf[0], $csv_conf[1]);
+	    $row=array();
+	    break;
+	}
       }
     }
 

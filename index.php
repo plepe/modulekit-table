@@ -21,6 +21,11 @@ $def = array(
   'BAUJAHR'		=> array(
     'name'		  => "Date of construction",
   ),
+  'DENKMAL'		=> array(
+    'name'		  => "Is Memorial?",
+    'type'		  => 'group',
+    'format'		  => "Is Memorial? [DENKMAL]",
+  ),
 );
 
 $table = new table($def, $data);
