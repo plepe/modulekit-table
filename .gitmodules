@@ -1,0 +1,6 @@
+[submodule "modulekit"]
+	path = modulekit
+	url = git@github.com:plepe/modulekit.git
+[submodule "modules/base"]
+	path = modules/base
+	url = git@github.com:plepe/modulekit-base.git
