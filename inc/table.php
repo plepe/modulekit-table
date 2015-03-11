@@ -282,6 +282,7 @@ class table {
 
     $data = $this->data;
     $sorts = array();
+    $has_groups = false;
     foreach($this->def as $k=>$def) {
       if(array_key_exists('sort', $def)) {
 	if($def['sort'] === true) {
@@ -297,6 +298,9 @@ class table {
 	  $sorts[] = $s;
 	}
       }
+
+      if(array_key_exists('type', $def) && ($def['type'] == 'group'))
+	$has_groups = true;
     }
 
     $sorts = weight_sort($sorts);
@@ -370,15 +374,17 @@ class table {
     }
 
     foreach($rows as $group_value=>$group_rows) {
-      switch($mode) {
-	case "html":
-	  $ret.="  <tr class='group'>\n";
-	  $ret.="<td colspan='". sizeof($group_rows[0]) ."'>{$group_value}</td>";
-	  $ret.="  </tr>\n";
-	  break;
-	case "csv":
-	  $ret.=printcsv(array($group_value), $csv_conf[0], $csv_conf[1]);
-	  break;
+      if($has_groups) {
+	switch($mode) {
+	  case "html":
+	    $ret.="  <tr class='group'>\n";
+	    $ret.="<td colspan='". sizeof($group_rows[0]) ."'>{$group_value}</td>";
+	    $ret.="  </tr>\n";
+	    break;
+	  case "csv":
+	    $ret.=printcsv(array($group_value), $csv_conf[0], $csv_conf[1]);
+	    break;
+	}
       }
 
       foreach($group_rows as $row) {
