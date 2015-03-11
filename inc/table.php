@@ -280,7 +280,71 @@ class table {
 
     }
 
-    foreach($this->data as $rowid=>$rowv) {
+    $data = $this->data;
+    $sorts = array();
+    foreach($this->def as $k=>$def) {
+      if(array_key_exists('sort', $def)) {
+	if($def['sort'] === true) {
+	  $sorts[] = array(
+	    'key'		=> $k,
+	    'type'		=> "alpha",
+	    'weight'		=> 0
+	  );
+	}
+	else {
+	  $s = $def['sort'];
+	  $s['key'] = $k;
+	  $sorts[] = $s;
+	}
+      }
+    }
+
+    $sorts = weight_sort($sorts);
+
+    usort($data, function($a, $b) use ($sorts) {
+      foreach($sorts as $s) {
+	$dir = 1;
+	if(array_key_exists('dir', $s))
+	  $dir = $s['dir'] == 'desc' ? -1 : 1;
+
+	switch(!array_key_exists('type', $s) ? null : $s['type']) {
+	  case 'num':
+	  case 'numeric':
+	    if((float)$a[$s['key']] == (float)$b[$s['key']])
+	      continue;
+
+	    $c = (float)$a[$s['key']] > (float)$b[$s['key']] ? 1 : -1;
+	    return $c * $dir;
+
+	  case 'nat':
+	    $c = strnatcmp($a[$s['key']], $b[$s['key']]);
+
+	    if($c === 0)
+	      continue;
+
+	    return $c * $dir;
+
+	  case 'case':
+	    $c = strcasecmp($a[$s['key']], $b[$s['key']]);
+
+	    if($c === 0)
+	      continue;
+
+	    return $c * $dir;
+
+	  case 'alpha':
+	  default:
+	    $c = strcmp($a[$s['key']], $b[$s['key']]);
+
+	    if($c === 0)
+	      continue;
+
+	    return $c * $dir;
+	}
+      }
+    });
+
+    foreach($data as $rowid=>$rowv) {
       $tr=$this->build_tr($rowv);
 
       if($has_aggregate) {

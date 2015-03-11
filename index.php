@@ -14,12 +14,18 @@ fclose($f);
 $def = array(
   'BASIS_NAME'		=> array(
     'name'		  => "Name",
+    'sort'		  => true,
   ),
   'BASIS_TYP'		=> array(
     'name'		  => "Type"
   ),
   'BAUJAHR'		=> array(
     'name'		  => "Date of construction",
+    'sort'		  => array(
+      'type'		    => 'numeric',
+      'dir'		    => 'asc',
+      'weight'		    => -1,
+    ),
   ),
   'DENKMAL'		=> array(
     'name'		  => "Is Memorial?",
