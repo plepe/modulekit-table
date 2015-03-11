@@ -22,6 +22,7 @@ class table {
 	  $columns+=$this->columns($v['columns']);
 	  break;
 	case "group":
+	case "hidden":
 	  break;
 	default:
 	  $columns++;
@@ -165,7 +166,7 @@ class table {
 	else
 	  $ret=array_merge($ret, $this->print_headers($level-1, $v['columns'], $maxlevel-1));
       }
-      elseif($v['type'] == "group") {
+      elseif(in_array($v['type'], array("group", "hidden"))) {
       }
       else {
 	if($level==0) {
@@ -359,10 +360,11 @@ class table {
       $group_value = array();
       $row = array();
       foreach($this->print_values($rowv, $tr) as $elem) {
-	if(array_key_exists('type', $elem) && in_array($elem['type'], array("group"))) {
-	  if($elem['type'] == "group")
+	if(array_key_exists('type', $elem) && in_array($elem['type'], array("group", "hidden"))) {
+	  if($elem['type'] == "group") {
 	    $group[] = $elem;
 	    $group_value[] = $elem['value'];
+	  }
 	}
 	else
 	  $row[] = $this->print_row($elem, $mode);

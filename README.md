@@ -15,7 +15,7 @@ The following properties for each column are available:
 Property        | Description
 ----------------|-------------
 name            | Name of column, will be printed in the header
-type            | "default": a normal column (default); "multiple": column has several sub columns (see property "columns"); "group": This column won't appear as separate column, but all rows with the same value in this field will be grouped together and will get a sub-header.
+type            | "default": a normal column (default); "hidden": hidden from output (but may be used for sorting); "multiple": column has several sub columns (see property "columns"); "group": This column won't appear as separate column, but all rows with the same value in this field will be grouped together and will get a sub-header.
 format          | Defines an output format for this field (see below under "Format"). If omitted, the value of the data with this column id will be used.
 sort            | Sort by this value. Either boolean (default: false: no sort) or an assoc. array further defining sort criteria: "type": "alpha" (default), "num"/"numeric", "case" (alphabetic, but case insenstive), "nat" (natural sort algorithm); "dir": "asc" (default), "desc"; "weight": defines order of sorting, if there are several sort options (the lower the value the more important; default 0).
 
