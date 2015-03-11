@@ -15,5 +15,11 @@ table.table td {
   padding: 2px;
 }
 tr.group {
-  background: grey;
+  background: #a0a0a0;
+}
+tr.odd {
+  background: #e0e0e0;
+}
+tr.even {
+  background: #ffffff;
 }

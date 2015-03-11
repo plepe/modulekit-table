@@ -373,6 +373,7 @@ class table {
       $rows[$group_value][] = $row;
     }
 
+    $odd = false;
     foreach($rows as $group_value=>$group_rows) {
       if($has_groups) {
 	switch($mode) {
@@ -390,7 +391,7 @@ class table {
       foreach($group_rows as $row) {
 	switch($mode) {
 	  case "html":
-	    $ret.="  <tr>\n";
+	    $ret.="  <tr class='". ($odd?"odd":"even") ."'>\n";
 	    $ret.=implode("\n", $row);
 	    $ret.="  </tr>\n";
 	    $row=array();
@@ -400,6 +401,8 @@ class table {
 	    $row=array();
 	    break;
 	}
+
+	$odd = !$odd;
       }
     }
 
