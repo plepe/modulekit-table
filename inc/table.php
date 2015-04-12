@@ -306,7 +306,13 @@ class table {
 
     $sorts = weight_sort($sorts);
 
-    usort($data, function($a, $b) use ($sorts) {
+    // add __index value, to maintain value order on equal entries
+    $i = 0;
+    foreach($data as $k=>$d) {
+      $data[$k]['__index'] = $i++;
+    }
+
+    uasort($data, function($a, $b) use ($sorts) {
       foreach($sorts as $s) {
 	$dir = 1;
 	if(array_key_exists('dir', $s))
@@ -347,6 +353,9 @@ class table {
 	    return $c * $dir;
 	}
       }
+
+      // equal entries for sorting -> maintain value order
+      return $a['__index'] > $b['__index'];
     });
 
     foreach($data as $rowid=>$rowv) {
