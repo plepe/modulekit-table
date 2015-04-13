@@ -7,6 +7,9 @@ $include=array(
   'php'=>array(
     'inc/*.php',
   ),
+  'js'=>array(
+    'inc/*.js',
+  ),
   'css'=>array(
     'inc/*.css',
   ),
