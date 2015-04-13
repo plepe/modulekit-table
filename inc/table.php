@@ -1,4 +1,4 @@
-<?
+<?php
 class table {
   function __construct($def, $data, $options=array()) {
     $this->def=$def;

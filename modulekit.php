@@ -1,4 +1,4 @@
-<?
+<?php
 $id="modulekit-table";
 
 $depend=array("hooks", "weight_sort");
