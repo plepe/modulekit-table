@@ -112,8 +112,6 @@ class table {
       $def=$this->def;
 
     foreach($def as $k=>$v) {
-      $value=$data[$k];
-
       if($v['type']=="multiple") {
 	$ret=$this->aggregate_check($v['columns']);
 	if($ret)

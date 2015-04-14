@@ -125,7 +125,6 @@ table.prototype.aggregate_check = function(def) {
 
   for(var k in def) {
     var v = def[k];
-    var value = data[k]; // TODO: Bug??? data is not defined, is it?
 
     if(v.type == "multiple") {
       var ret = this.aggregate_check(v.columns);
