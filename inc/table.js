@@ -232,6 +232,8 @@ table.prototype.build_tr = function(rowv, prefix) {
 table.prototype.show = function(mode, param) {
   if(!mode)
     mode = "html";
+  if(!param)
+    param = {};
   var ret = "";
   var csv_conf;
 
@@ -384,7 +386,11 @@ table.prototype.show = function(mode, param) {
     return 0;
   }.bind(this, sorts));
 
-  for(var rowid = 0; rowid < data.length; rowid++) {
+  var count = data.length;
+  if(param.limit && (param.limit <= data.length))
+    count = param.limit;
+
+  for(var rowid = 0; rowid < count; rowid++) {
     var rowv = data[rowid];
     var tr = this.build_tr(rowv);
 
