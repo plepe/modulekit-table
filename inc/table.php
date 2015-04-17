@@ -390,7 +390,7 @@ class table {
 	switch($mode) {
 	  case "html":
 	    $ret.="  <tr class='group'>\n";
-	    $ret.="<td colspan='". sizeof($group_rows[0]) ."'>{$group_value}</td>";
+	    $ret.="    <td colspan='". sizeof($group_rows[0]) ."'>{$group_value}</td>";
 	    $ret.="  </tr>\n";
 	    break;
 	  case "csv":
