@@ -2,7 +2,7 @@ Introduction
 ============
 ```php
 $table = new table($definition, $data, [$options]);
-print $table->show([$mode, [$param]]);
+print $table->show();
 ```
 
 $defintion
@@ -66,6 +66,15 @@ Twig templating engine
 Fields are enclosed in double curly brackets, e.g. `{{ id }}`. There's the
 possibility to use loops, conditions and filters. See the [Twig
 homepage](http://twig.sensiolabs.org/) for details.
+
+Functions
+=========
+show([$mode, [$param]])
+-----------------------
+
+* Mode: 'html' or 'csv'
+* Param: a hash with:
+** 'limit': only show n elements
 
 Examples
 ========

@@ -112,8 +112,6 @@ class table {
       $def=$this->def;
 
     foreach($def as $k=>$v) {
-      $value=$data[$k];
-
       if($v['type']=="multiple") {
 	$ret=$this->aggregate_check($v['columns']);
 	if($ret)
@@ -312,7 +310,7 @@ class table {
       $data[$k]['__index'] = $i++;
     }
 
-    uasort($data, function($a, $b) use ($sorts) {
+    usort($data, function($a, $b) use ($sorts) {
       foreach($sorts as $s) {
 	$dir = 1;
 	if(array_key_exists('dir', $s))
@@ -358,7 +356,12 @@ class table {
       return $a['__index'] > $b['__index'];
     });
 
-    foreach($data as $rowid=>$rowv) {
+    $count = sizeof($data);
+    if(array_key_exists('limit', $param) && ($param['limit'] <= sizeof($data)))
+      $count = $param['limit'];
+
+    for($rowid = 0; $rowid < $count; $rowid++) {
+      $rowv = $data[$rowid];
       $tr=$this->build_tr($rowv);
 
       if($has_aggregate) {
