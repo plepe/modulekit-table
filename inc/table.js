@@ -173,7 +173,7 @@ table.prototype.print_headers = function(level, def, maxlevel) {
     if(v.type == "multiple") {
       if(level == 0) {
         var cols = this.columns(v.columns);
-        ret.push({ "class": k, "colspan": cols, "value": v.name });
+        ret.push({ "type": "head", "class": k, "colspan": cols, "value": v.name });
       }
       else
         ret = ret.concat(this.print_headers(level - 1, v.columns, maxlevel -1));
@@ -182,27 +182,13 @@ table.prototype.print_headers = function(level, def, maxlevel) {
     }
     else {
       if(level == 0)
-        ret.push({ "class": k, "rowspan": maxlevel, "value": v.name });
+        ret.push({ "type": "head", "class": k, "rowspan": maxlevel, "value": v.name });
       else
         ret.push(null);
     }
   }
 
   return ret;
-}
-
-table.prototype.print_row = function(elem, mode) {
-  switch(mode) {
-    case "html":
-      var r = elem.value;
-
-      if(elem.link)
-        var r = "<a href='" + elem.link + "'>" + r + "</a>";
-
-      return "    <td class='" + elem['class'] + "'>" + r + "</td>\n";
-    case "csv":
-      return elem.value;
-  }
 }
 
 table.prototype.build_tr = function(rowv, prefix) {
@@ -234,74 +220,18 @@ table.prototype.show = function(mode, param) {
     mode = "html";
   if(!param)
     param = {};
-  var ret = "";
-  var csv_conf;
+  var result = [];
 
   var has_aggregate = this.aggregate_check();
-
-  switch(mode) {
-    case "html":
-      ret = "<table class='table'>";
-      break;
-    case "csv":
-      if(param != null)
-        csv_conf = param;
-      else
-        csv_conf = [",", "\"", "UTF-8"];
-      ret = "";
-      break;
-    default:
-      alert("Table: invalid mode '" + mode + "'");
-  }
 
   var rows = [];
   var row = [];
   var groups = [];
   for(var l = 0; l < this.levels(); l++) {
-    switch(mode) {
-      case "html":
-        ret += "  <tr>\n";
-        break;
-    }
-
-    var headers = this.print_headers(l);
-    for(var h = 0; h < headers.length; h++) {
-      var elem = headers[h];
-
-      switch(mode) {
-        case "html":
-          if(elem != null) {
-            ret += "<th class='" + elem['class'] + "'";
-            if(elem.colspan)
-              ret += " colspan='" + elem.colspan + "'";
-            if(elem.rowspan)
-              ret += " rowspan='" + elem.colspan + "'";
-            ret += ">" + elem.value + "</th>\n";
-          }
-          break;
-        case "csv":
-          var colspan = 1;
-          if(elem.colspan)
-            colspan = elem.colspan;
-
-          for(var i = 0; i < colspan; i++) {
-            if(elem != null)
-              row.push(elem.value);
-            else
-              row.push("");
-          }
-      }
-    }
-
-    switch(mode) {
-      case "html":
-        ret += "  </tr>\n";
-        break;
-      case "csv":
-        ret += printcsv(row, csv_conf[0], csv_conf[1]);
-        row = [];
-        break;
-    }
+    result.push({
+      'type': 'head' + l,
+      'values': this.print_headers(l)
+    });
   }
 
   var data = this.data;
@@ -412,7 +342,7 @@ table.prototype.show = function(mode, param) {
         }
       }
       else {
-        row.push(this.print_row(elem, mode));
+        row.push(elem);
       }
     }
 
@@ -428,64 +358,113 @@ table.prototype.show = function(mode, param) {
     var group_rows = rows[group_value];
 
     if(has_groups) {
-      switch(mode) {
-        case "html":
-          ret += "  <tr class='group'>\n";
-          ret += "    <td colspan='" + group_rows[0].length + "'>" + group_value + "</td>\n";
-          ret += "  </tr>\n";
-          break;
-        case "csv":
-          ret += printcsv([group_value], csv_conf[0], csv_conf[1]);
-          break;
-      }
+      result.push({
+        'type': 'group',
+        'values': [
+          {
+            'value': group_value,
+            'colspan': group_rows[0].length
+          }
+        ]
+      });
     }
 
     for(var rowid = 0; rowid < group_rows.length; rowid++) {
-      var row = group_rows[rowid];
-
-      switch(mode) {
-        case "html":
-          ret += "  <tr class='" + (odd ? "odd" : "even") + "'>\n";
-          ret += row.join("\n");
-          ret += "  </tr>\n";
-          row = [];
-          break;
-        case "csv":
-	  ret += printcsv(row, csv_conf[0], csv_conf[1]);
-	  row = [];
-	  break;
-      }
-
-      odd = !odd;
+      result.push({
+        'type': 'element',
+        'values': group_rows[rowid]
+      });
     }
   }
 
   if(has_aggregate) {
-    var aggs = this.print_aggregate(agg);
-    for(var i = 0; i < aggs.length; i++) {
-      var elem = aggs[i];
-
-      row.push(this.print_row(elem, mode));
-    }
-
-    switch(mode) {
-      case "html":
-        ret += "  <tr class='agg'>\n";
-        ret += row.join("\n");
-        ret += "  </tr>\n";
-        row = [];
-        break;
-      case "csv":
-        ret += printcsv(row, csv_conf[0], csv_conf[1]);
-        row = [];
-        break;
-    }
+    result.push({
+      'type': 'agg',
+      'values': this.print_aggregate(agg)
+    });
   }
 
-  switch(mode) {
-    case "html":
-      ret += "</table>\n";
-      break;
+  if(mode == "html")
+    return this.print_html(result, param);
+  else
+    return this.print_csv(result, param);
+}
+
+table.prototype.print_html = function(result, param) {
+  ret = "<table class='table'>";
+
+  odd = false;
+  for(var rowid = 0; rowid < result.length; rowid++) {
+    var row = result[rowid];
+
+    switch(row['type']) {
+      case "element":
+        ret += "  <tr class='"+ (odd ? "odd" : "even") +"'>\n";
+        break;
+      default:
+        ret += "  <tr class='"+ row['type'] +"'>\n";
+    }
+
+    for(var elid = 0; elid < row['values'].length; elid++) {
+      var el = row['values'][elid];
+
+      if(el.type && (el['type'] == 'head')) {
+        ret += "    <th ";
+        var end = "</th>";
+      }
+      else {
+        ret += "    <td ";
+        var end = "</td>";
+      }
+
+      if(el.colspan)
+        ret += "colspan='"+ el['colspan'] +"' ";
+
+      ret += "class='"+ el['class'] +"'>";
+
+      if(el.link)
+        ret += "<a href='" + el['link'] + "'>" + el['value'] + "</a>";
+      else
+        ret += el['value'];
+
+      ret += end;
+
+    }
+
+    ret += "  </tr>\n";
+    if(row['type'] == "element")
+      odd = !odd;
+  }
+
+  ret += "</table>\n";
+  return ret;
+}
+
+table.prototype.print_csv = function(result, param) {
+  ret = "";
+
+  if(param != null)
+    csv_conf = param;
+  else
+    csv_conf = [ ",", "\"", "UTF-8" ];
+
+  for(var rowid = 0; rowid < result.length; rowid++) {
+    var row = result[rowid];
+
+    to_print = [];
+
+    for(var elid = 0; elid < row['values'].length; elid++) {
+      var el = row['values'][elid];
+
+      colspan = 1;
+      if(el.colspan)
+        colspan = el['colspan'];
+
+      for(i = 0; i < colspan; i++)
+        to_print.push(el['value']);
+    }
+
+    ret += printcsv(to_print, csv_conf[0], csv_conf[1]);
   }
 
   return ret;

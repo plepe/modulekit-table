@@ -159,7 +159,7 @@ class table {
       if($v['type']=="multiple") {
 	if($level==0) {
 	  $cols=$this->columns($v['columns']);
-	  $ret[]=array("class"=>$k, "colspan"=>$cols, "value"=>$v['name']);
+	  $ret[]=array("type"=>"head", "class"=>$k, "colspan"=>$cols, "value"=>$v['name']);
 	}
 	else
 	  $ret=array_merge($ret, $this->print_headers($level-1, $v['columns'], $maxlevel-1));
@@ -168,7 +168,7 @@ class table {
       }
       else {
 	if($level==0) {
-	  $ret[]=array("class"=>$k, "rowspan"=>$maxlevel, "value"=>$v['name']);
+	  $ret[]=array("type"=>"head", "class"=>$k, "rowspan"=>$maxlevel, "value"=>$v['name']);
 	}
 	else {
 	  $ret[]=null;
@@ -177,22 +177,6 @@ class table {
     }
 
     return $ret;
-  }
-
-  function print_row($elem, $mode) {
-    switch($mode) {
-      case "html":
-	$r=$elem['value'];
-
-	if(isset($elem['link']))
-	  $r="<a href='{$elem['link']}'>{$r}</a>";
-
-	return "    <td class='{$elem['class']}'>{$r}</td>\n";
-	break;
-      case "csv":
-	return $elem['value'];
-	break;
-    }
   }
 
   function build_tr($rowv, $prefix="") {
@@ -215,68 +199,15 @@ class table {
 
   function show($mode="html", $param=null) {
     $has_aggregate=$this->aggregate_check();
-
-    switch($mode) {
-      case "html":
-	$ret="<table class='table'>";
-	break;
-      case "csv":
-        if($param!=null)
-	  $csv_conf=$param;
-	else
-	  $csv_conf=array(",", "\"", "UTF-8");
-	$ret="";
-        break;
-      default:
-        print "Table: Invalid mode '$mode'\n";
-    }
+    $result = array();
 
     $agg=array();
     $rows = array();
     $groups = array();
     for($l=0; $l<$this->levels(); $l++) {
-      switch($mode) {
-	case "html":
-	  $ret.="  <tr>\n";
-	  break;
-      }
+      $current_row = $this->print_headers($l);
 
-      foreach($this->print_headers($l) as $elem) {
-	switch($mode) {
-	  case "html":
-	    if($elem!=null) {
-	      $ret.="<th class='{$elem['class']}'";
-	      if(isset($elem['colspan']))
-		$ret.=" colspan='{$elem['colspan']}'";
-	      if(isset($elem['rowspan']))
-		$ret.=" rowspan='{$elem['rowspan']}'";
-	      $ret.=">{$elem['value']}</th>\n";
-	    }
-	    break;
-	  case "csv":
-	    $colspan=1;
-	    if(isset($elem['colspan']))
-	      $colspan=$elem['colspan'];
-
-	    for($i=0; $i<$colspan; $i++) {
-	      if($elem!=null)
-		$row[]=$elem['value'];
-	      else
-		$row[]="";
-	    }
-	}
-      }
-
-      switch($mode) {
-	case "html":
-	  $ret.="  </tr>\n";
-	  break;
-	case "csv":
-	  $ret.=printcsv($row, $csv_conf[0], $csv_conf[1]);
-	  $row=array();
-	  break;
-      }
-
+      $result[] = array("type" => "head{$l}", "values" => $current_row);
     }
 
     $data = $this->data;
@@ -379,7 +310,7 @@ class table {
 	  }
 	}
 	else
-	  $row[] = $this->print_row($elem, $mode);
+	  $row[] = $elem;
       }
 
       $group_value = implode("|", $group_value);
@@ -387,62 +318,108 @@ class table {
       $rows[$group_value][] = $row;
     }
 
-    $odd = false;
     foreach($rows as $group_value=>$group_rows) {
+      $current_row = array();
       if($has_groups) {
-	switch($mode) {
-	  case "html":
-	    $ret.="  <tr class='group'>\n";
-	    $ret.="    <td colspan='". sizeof($group_rows[0]) ."'>{$group_value}</td>";
-	    $ret.="  </tr>\n";
-	    break;
-	  case "csv":
-	    $ret.=printcsv(array($group_value), $csv_conf[0], $csv_conf[1]);
-	    break;
-	}
+        $result[] = array(
+          'type' => 'group',
+          'values' => array(
+            array(
+              'value' => $group_value,
+              'colspan' => sizeof($group_rows[0]),
+            )
+          ),
+        );
       }
 
       foreach($group_rows as $row) {
-	switch($mode) {
-	  case "html":
-	    $ret.="  <tr class='". ($odd?"odd":"even") ."'>\n";
-	    $ret.=implode("\n", $row);
-	    $ret.="  </tr>\n";
-	    $row=array();
-	    break;
-	  case "csv":
-	    $ret.=printcsv($row, $csv_conf[0], $csv_conf[1]);
-	    $row=array();
-	    break;
-	}
-
-	$odd = !$odd;
+        $result[] = array(
+          'type' => 'element',
+          'values' => $row,
+        );
       }
     }
 
     if($has_aggregate) {
-      foreach($this->print_aggregate($agg) as $elem) {
-	$row[]=$this->print_row($elem, $mode);
-      }
-
-      switch($mode) {
-	case "html":
-	  $ret.="  <tr class='agg'>\n";
-	  $ret.=implode("\n", $row);
-	  $ret.="  </tr>\n";
-	  $row=array();
-	  break;
-	case "csv":
-	  $ret.=printcsv($row, $csv_conf[0], $csv_conf[1]);
-	  $row=array();
-	  break;
-      }
+      $result[] = array(
+        'type' => 'agg',
+        'values' => $this->print_aggregate($agg),
+      );
     }
 
-    switch($mode) {
-      case "html":
-	$ret.="</table>\n";
-	break;
+    // print_r($result);
+    if($mode == "html")
+      return $this->print_html($result, $param);
+    else
+      return $this->print_csv($result, $param);
+  }
+
+  function print_html($result, $param=array()) {
+    $ret = "<table class='table'>";
+
+    $odd = false;
+    foreach($result as $row) {
+      switch($row['type']) {
+        case "element":
+          $ret .= "  <tr class='". ($odd ? "odd" : "even") ."'>\n";
+          break;
+        default:
+          $ret .= "  <tr class='{$row['type']}'>\n";
+      }
+
+      foreach($row['values'] as $el) {
+        if(array_key_exists('type', $el) && ($el['type'] == 'head')) {
+          $ret .= "    <th ";
+          $end = "</th>";
+        }
+        else {
+          $ret .= "    <td ";
+          $end = "</td>";
+        }
+
+        if(array_key_exists('colspan', $el))
+          $ret .= "colspan='{$el['colspan']}' ";
+
+        $ret .= "class='{$el['class']}'>";
+
+        if(array_key_exists("link", $el))
+          $ret .= "<a href='" . $el['link'] . "'>" . $el['value'] . "</a>";
+        else
+          $ret .= $el['value'];
+
+        $ret .= "{$end}\n";
+
+      }
+
+      $ret .= "  </tr>\n";
+      if($row['type'] == "element")
+        $odd = !$odd;
+    }
+
+    $ret .= "</table>\n";
+    return $ret;
+  }
+
+  function print_csv($result, $param=array()) {
+    $ret = "";
+
+    if($param!=null)
+      $csv_conf=$param;
+    else
+      $csv_conf=array(",", "\"", "UTF-8");
+
+    foreach($result as $row) {
+      $to_print = array();
+      foreach($row['values'] as $el) {
+        $colspan = 1;
+        if(array_key_exists('colspan', $el))
+          $colspan = $el['colspan'];
+
+        for($i = 0; $i < $colspan; $i++)
+          $to_print[] = $el['value'];
+      }
+
+      $ret .= printcsv($to_print, $csv_conf[0], $csv_conf[1]);
     }
 
     return $ret;
