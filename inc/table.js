@@ -419,6 +419,8 @@ table.prototype.print_html = function(result, param) {
 
       if(el.colspan)
         ret += "colspan='"+ el['colspan'] +"' ";
+      if(el.rowspan)
+        ret += "rowspan='"+ el['rowspan'] +"' ";
 
       ret += "class='"+ el['class'] +"'>";
 

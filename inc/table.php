@@ -379,6 +379,8 @@ class table {
 
         if(array_key_exists('colspan', $el))
           $ret .= "colspan='{$el['colspan']}' ";
+        if(array_key_exists('rowspan', $el))
+          $ret .= "rowspan='{$el['rowspan']}' ";
 
         $ret .= "class='{$el['class']}'>";
 
