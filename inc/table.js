@@ -15,12 +15,44 @@ function table(def, data, options) {
     this.options.template_engine = "internal";
 
   window.setTimeout(this.connect.bind(this), 1);
-  this.calculated_style = document.createElement("style");
-  document.head.appendChild(this.calculated_style);
+  this.show_column_style = document.createElement("style");
+  document.head.appendChild(this.show_column_style);
+  window.addEventListener("resize", this.resize.bind(this));
 }
 
 table.prototype.connect = function() {
   this.table = document.getElementById(this.id);
+  this.resize();
+}
+
+table.prototype.resize = function() {
+  if(!this.table)
+    return;
+
+  this.show_column_style.innerHTML =  "";
+  for(var k in this.def) {
+    this.def[k].is_hidden = false;
+  }
+
+  while(this.table.offsetWidth > window.innerWidth) {
+    var lowest_priority = 9999999999;
+    var lowest_column = null;
+
+    for(var k in this.def) {
+      if(this.def[k].show_priority && (!this.def[k].is_hidden) && (this.def[k].show_priority < lowest_priority)) {
+        lowest_priority = this.def[k].show_priority;
+        lowest_column = k;
+      }
+    }
+
+    if(!lowest_column)
+      return;
+
+    this.show_column_style.innerHTML +=
+      "table#" + this.id + " td." + lowest_column + " { display: none; }\n" +
+      "table#" + this.id + " th." + lowest_column + " { display: none; }";
+    this.def[lowest_column].is_hidden = true;
+  }
 }
 
 table.prototype.columns = function(def) {
