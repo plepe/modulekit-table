@@ -5,6 +5,9 @@ class table {
     $this->data=$data;
     $this->mode="html";
     $this->options = $options;
+    if(!array_key_exists("id", $this->options))
+      $this->options['id'] = "t" . rand();
+    $this->id =  $this->options['id'];
     $this->agg=array();
 
     if(!array_key_exists('template_engine', $this->options))
@@ -357,7 +360,9 @@ class table {
   }
 
   function print_html($result, $param=array()) {
-    $ret = "<table class='table'>";
+    $ret = "";
+
+    $ret .= "<table class='table' id='{$this->id}'>";
 
     $odd = false;
     foreach($result as $row) {
