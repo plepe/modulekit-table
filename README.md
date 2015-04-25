@@ -48,6 +48,7 @@ The following options are available:
 Key             | Description | Possible values (highlight = default)
 ----------------|-------------|---------------------------------------
 template_engine | Which templating engine to use | **internal**, twig[1]
+id              | ID of table (string). If undefined a random ID will be used. |
 
 [1] If you want to use [Twig](http://twig.sensiolabs.org/) as templating engine, include the module 'twig' of [modulekit-base](https://github.com/plepe/modulekit-base).
 

@@ -2,6 +2,11 @@ function table(def, data, options) {
   this.def = def;
   this.data = data;
   this.options = options;
+  if(!this.options)
+    this.options = {};
+  if(!("id" in this.options))
+    this.options.id = (Math.random() + "").replace("0.", "t");
+  this.id = this.options.id;
   this.agg = {};
 
   if(!this.options)
@@ -391,7 +396,7 @@ table.prototype.show = function(mode, param) {
 }
 
 table.prototype.print_html = function(result, param) {
-  ret = "<table class='table'>";
+  ret = "<table class='table' id='" + this.id + "'>";
 
   odd = false;
   for(var rowid = 0; rowid < result.length; rowid++) {
