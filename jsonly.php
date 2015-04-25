@@ -18,6 +18,7 @@ $def = array(
   ),
   'BASIS_TYP'		=> array(
     'name'		  => "Type"
+    'show_priority'       => 1,
   ),
   'BAUJAHR'		=> array(
     'name'		  => "Date of construction",
