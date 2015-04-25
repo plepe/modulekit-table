@@ -360,9 +360,7 @@ class table {
   }
 
   function print_html($result, $param=array()) {
-    $ret = "";
-
-    $ret .= "<table class='table' id='{$this->id}'>";
+    $ret = "<table class='table' id='{$this->id}'>";
 
     $odd = false;
     foreach($result as $row) {
@@ -406,6 +404,11 @@ class table {
     }
 
     $ret .= "</table>\n";
+
+    $ret .= "<script type='text/javascript'>\n";
+    $ret .= "var table_{$this->id} = new table(". json_encode($this->def) . ", null, " . json_encode($this->options) . ")\n";
+    $ret .= "</script>\n";
+
     return $ret;
   }
 

@@ -13,6 +13,12 @@ function table(def, data, options) {
     this.options = {};
   if(!this.options.template_engine)
     this.options.template_engine = "internal";
+
+  window.setTimeout(this.connect.bind(this), 1);
+}
+
+table.prototype.connect = function() {
+  this.table = document.getElementById(this.id);
 }
 
 table.prototype.columns = function(def) {
