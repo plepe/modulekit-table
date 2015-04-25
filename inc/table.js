@@ -15,6 +15,8 @@ function table(def, data, options) {
     this.options.template_engine = "internal";
 
   window.setTimeout(this.connect.bind(this), 1);
+  this.calculated_style = document.createElement("style");
+  document.head.appendChild(this.calculated_style);
 }
 
 table.prototype.connect = function() {
