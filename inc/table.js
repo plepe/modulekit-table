@@ -393,9 +393,9 @@ table.prototype.show = function(mode, param) {
 }
 
 table.prototype.print_html = function(result, param) {
-  ret = "<table class='table'>";
+  var ret = "<table class='table'>";
 
-  odd = false;
+  var odd = false;
   for(var rowid = 0; rowid < result.length; rowid++) {
     var row = result[rowid];
 
