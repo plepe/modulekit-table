@@ -431,14 +431,16 @@ table.prototype.show = function(mode, param) {
 
   if(mode == "html")
     return this.print_html(result, param);
+  else if(mode == "html-transposed")
+    return this.print_html_transposed(result, param);
   else
     return this.print_csv(result, param);
 }
 
 table.prototype.print_html = function(result, param) {
-  ret = "<table class='table' id='" + this.id + "'>";
+  var ret = "<table class='table' id='" + this.id + "'>";
 
-  odd = false;
+  var odd = false;
   for(var rowid = 0; rowid < result.length; rowid++) {
     var row = result[rowid];
 
@@ -481,6 +483,69 @@ table.prototype.print_html = function(result, param) {
     ret += "  </tr>\n";
     if(row['type'] == "element")
       odd = !odd;
+  }
+
+  ret += "</table>\n";
+  return ret;
+}
+
+table.prototype.print_html_transposed = function(result, param) {
+  var ret = "<table class='table transposed'>";
+  var cols = [];
+
+  var odd = "even";
+  for(var rowid = 0; rowid < result.length; rowid++) {
+    var row = result[rowid];
+    var i = 0;
+
+    for(var elid = 0; elid < row['values'].length; elid++) {
+      if(!cols[i])
+        cols[i] = "";
+
+      var el = row['values'][elid];
+
+      if(el.type && (el['type'] == 'head')) {
+        cols[i] += "    <th ";
+        var end = "</th>";
+      }
+      else {
+        cols[i] += "    <td ";
+        var end = "</td>";
+      }
+
+      if(el.colspan)
+        cols[i] += "rowspan='" + el['colspan'] + "' ";
+      if(el.rowspan)
+        cols[i] += "colspan='" + el['rowspan'] + "' ";
+
+      cols[i] += "class='" + el['class'];
+
+      switch(row['type']) {
+        case "element":
+          cols[i] += " " + odd;
+          break;
+        default:
+          cols[i] += " " + row['type'];
+      }
+
+      cols[i] += "'>";
+
+      if(el.link)
+        cols[i] += "<a href='" + el['link'] + "'>" + el['value'] + "</a>";
+      else
+        cols[i] += el['value'];
+
+      cols[i] += end + "\n";
+
+      i++;
+    }
+
+    if(row['type'] == "element")
+      odd = (odd == "even" ? "odd": "even");
+  }
+
+  for(var i = 0; i < cols.length; i++) {
+    ret += "  <tr>\n" + cols[i] + "  </tr>\n";
   }
 
   ret += "</table>\n";
