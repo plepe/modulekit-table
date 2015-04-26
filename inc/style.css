@@ -29,3 +29,8 @@ th.even,
 td.even {
   background: #ffffff;
 }
+a.table_link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

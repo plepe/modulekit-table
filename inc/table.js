@@ -427,7 +427,7 @@ table.prototype.print_html = function(result, param) {
       ret += "class='"+ el['class'] +"'>";
 
       if(el.link)
-        ret += "<a href='" + el['link'] + "'>" + el['value'] + "</a>";
+        ret += "<a class='table_link' href='" + el['link'] + "'>" + el['value'] + "</a>";
       else
         ret += el['value'];
 
@@ -486,7 +486,7 @@ table.prototype.print_html_transposed = function(result, param) {
       cols[i] += "'>";
 
       if(el.link)
-        cols[i] += "<a href='" + el['link'] + "'>" + el['value'] + "</a>";
+        cols[i] += "<a class='table_link' href='" + el['link'] + "'>" + el['value'] + "</a>";
       else
         cols[i] += el['value'];
 

@@ -387,7 +387,7 @@ class table {
         $ret .= "class='{$el['class']}'>";
 
         if(array_key_exists("link", $el))
-          $ret .= "<a href='" . $el['link'] . "'>" . $el['value'] . "</a>";
+          $ret .= "<a class='table_link' href='" . $el['link'] . "'>" . $el['value'] . "</a>";
         else
           $ret .= $el['value'];
 
@@ -440,7 +440,7 @@ class table {
         $cols[$i] .= "'>";
 
         if(array_key_exists("link", $el))
-          $cols[$i] .= "<a href='" . $el['link'] . "'>" . $el['value'] . "</a>";
+          $cols[$i] .= "<a class='table_link' href='" . $el['link'] . "'>" . $el['value'] . "</a>";
         else
           $cols[$i] .= $el['value'];
 
