@@ -72,7 +72,7 @@ Functions
 show([$mode, [$param]])
 -----------------------
 
-* Mode: 'html' or 'csv'
+* Mode: 'html' or 'html-transposed' or 'csv'
 * Param: a hash with:
 ** 'limit': only show n elements
 

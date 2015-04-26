@@ -14,12 +14,18 @@ table.table td {
   border: 1px solid grey;
   padding: 2px;
 }
-tr.group {
+tr.group,
+th.group,
+td.group {
   background: #a0a0a0;
 }
-tr.odd {
+tr.odd,
+th.odd,
+td.odd {
   background: #e0e0e0;
 }
-tr.even {
+tr.even,
+th.even,
+td.even {
   background: #ffffff;
 }

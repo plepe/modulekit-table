@@ -350,6 +350,8 @@ class table {
     // print_r($result);
     if($mode == "html")
       return $this->print_html($result, $param);
+    elseif($mode == "html-transposed")
+      return $this->print_html_transposed($result, $param);
     else
       return $this->print_csv($result, $param);
   }
@@ -396,6 +398,63 @@ class table {
       $ret .= "  </tr>\n";
       if($row['type'] == "element")
         $odd = !$odd;
+    }
+
+    $ret .= "</table>\n";
+    return $ret;
+  }
+
+  function print_html_transposed($result, $param=array()) {
+    $ret = "<table class='table transposed'>";
+    $cols = array();
+
+    $odd = "even";
+    foreach($result as $row) {
+      $i = 0;
+      foreach($row['values'] as $el) {
+
+        if(array_key_exists('type', $el) && ($el['type'] == 'head')) {
+          $cols[$i] .= "    <th ";
+          $end = "</th>";
+        }
+        else {
+          $cols[$i] .= "    <td ";
+          $end = "</td>";
+        }
+
+        if(array_key_exists('colspan', $el))
+          $cols[$i] .= "rowspan='{$el['colspan']}' ";
+        if(array_key_exists('rowspan', $el))
+          $cols[$i] .= "colspan='{$el['rowspan']}' ";
+
+        $cols[$i] .= "class='{$el['class']}";
+
+        switch($row['type']) {
+          case "element":
+            $cols[$i] .= " {$odd}";
+            break;
+          default:
+            $cols[$i] .= " {$row['type']}";
+        }
+
+        $cols[$i] .= "'>";
+
+        if(array_key_exists("link", $el))
+          $cols[$i] .= "<a href='" . $el['link'] . "'>" . $el['value'] . "</a>";
+        else
+          $cols[$i] .= $el['value'];
+
+        $cols[$i] .= "{$end}\n";
+
+        $i++;
+      }
+
+      if($row['type'] == "element")
+        $odd = ($odd == "even" ? "odd": "even");
+    }
+
+    foreach($cols as $c) {
+      $ret .= "  <tr>\n". $c . "  </tr>\n";
     }
 
     $ret .= "</table>\n";
