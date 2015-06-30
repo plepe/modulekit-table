@@ -69,7 +69,7 @@ class table {
       $def=$this->def;
 
     foreach($def as $k=>$v) {
-      $value=$data[$k];
+      $value=htmlspecialchars($data[$k]);
 
       if($v['type']=="multiple")
 	$ret=array_merge($ret, $this->print_values($data[$k], $tr, $v['columns']));
@@ -193,7 +193,7 @@ class table {
 	  if(is_array($v))
 	    $tr=array_merge($tr, $this->build_tr($v, "{$prefix}{$k}."));
 	  else
-	    $tr["[{$prefix}{$k}]"]=$v;
+	    $tr["[{$prefix}{$k}]"]=htmlspecialchars($v);
 	}
     }
 
