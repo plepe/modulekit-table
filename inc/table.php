@@ -69,7 +69,12 @@ class table {
       $def=$this->def;
 
     foreach($def as $k=>$v) {
-      $value=htmlspecialchars($data[$k]);
+      if(is_array($data[$k])) {
+	$value = htmlspecialchars(json_encode($data[$k]));
+      }
+      else {
+	$value=htmlspecialchars($data[$k]);
+      }
 
       if($v['type']=="multiple")
 	$ret=array_merge($ret, $this->print_values($data[$k], $tr, $v['columns']));
