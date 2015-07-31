@@ -206,6 +206,9 @@ class table {
 	        $el['value'] .= !isset($s['dir']) || $s['dir'] == 'asc' ? ' ▲' : ' ▼';
 	      }
 	    }
+	    else {
+	      $append_url['sort_dir'] = isset($s['dir']) && $s['dir'] == 'desc' ? 'desc' : 'asc';
+	    }
 	  }
 
 	  if(sizeof($append_url)) {
