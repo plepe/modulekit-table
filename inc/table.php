@@ -12,6 +12,8 @@ class table {
 
     if(!array_key_exists('template_engine', $this->options))
       $this->options['template_engine'] = 'internal';
+
+    $this->params = $_REQUEST;
   }
 
   function columns($def=null) {
@@ -222,9 +224,11 @@ class table {
     $sorts = array();
     $has_groups = false;
     foreach($this->def as $k=>$def) {
+      $s = null;
+
       if(array_key_exists('sort', $def)) {
 	if($def['sort'] === true) {
-	  $sorts[] = array(
+	  $s = array(
 	    'key'		=> $k,
 	    'type'		=> "alpha",
 	    'weight'		=> 0
@@ -233,9 +237,18 @@ class table {
 	else {
 	  $s = $def['sort'];
 	  $s['key'] = $k;
-	  $sorts[] = $s;
 	}
       }
+
+      if(isset($this->params['sort']) && ($this->params['sort'] == $k)) {
+	$s['weight'] = -10000;
+
+	if(isset($this->params['sort_dir']))
+	  $s['dir'] = $this->params['sort_dir'];
+      }
+
+      if($s !== null)
+	$sorts[] = $s;
 
       if(array_key_exists('type', $def) && ($def['type'] == 'group'))
 	$has_groups = true;

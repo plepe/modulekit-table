@@ -5,6 +5,8 @@ $table = new table($definition, $data, [$options]);
 print $table->show();
 ```
 
+If an HTTP parameter 'sort' is submitted, a sort for this key gets higher priority (-10000). If additionally, a parameter 'sort_dir' is passed, the direction will be altered.
+
 $defintion
 ----------
 Defines the columns of the table. It is an assoc. array with the column id as
