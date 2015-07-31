@@ -191,8 +191,8 @@ class table {
 	  );
 
 	  $append_url = array();
-	  if(isset($v['sort']) || isset($v['sortable'])) {
-	    $s = isset($v['sort']) ? $v['sort'] : $v['sortable'];
+	  if((isset($v['sort']) && $v['sort']) || (isset($v['sortable']) && $v['sortable'])) {
+	    $s = isset($v['sort']) && $v['sort'] ? $v['sort'] : $v['sortable'];
 
 	    $append_url = array('sort' => $k);
 
@@ -268,6 +268,7 @@ class table {
 	    'weight'		=> 0
 	  );
 	}
+	elseif($def['sort'] === false); // nothing
 	else {
 	  $s = $def['sort'];
 	  $s['key'] = $k;
@@ -275,6 +276,7 @@ class table {
       }
 
       if(array_key_exists('sortable', $def) &&
+	 $def['sortable'] &&
          isset($this->params['sort']) && ($this->params['sort'] == $k)) {
 	if($def['sortable'] === true) {
 	  $s = array(
