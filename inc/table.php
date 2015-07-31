@@ -240,6 +240,21 @@ class table {
 	}
       }
 
+      if(array_key_exists('sortable', $def) &&
+         isset($this->params['sort']) && ($this->params['sort'] == $k)) {
+	if($def['sortable'] === true) {
+	  $s = array(
+	    'key'		=> $k,
+	    'type'		=> "alpha",
+	    'weight'		=> 0
+	  );
+	}
+	else {
+	  $s = $def['sortable'];
+	  $s['key'] = $k;
+	}
+      }
+
       if(isset($this->params['sort']) && ($this->params['sort'] == $k)) {
 	$s['weight'] = -10000;
 
