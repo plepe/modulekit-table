@@ -445,6 +445,9 @@ class table {
       }
 
       foreach($row['values'] as $el) {
+	if($el === null)
+	  continue;
+
         if(array_key_exists('type', $el) && ($el['type'] == 'head')) {
           $ret .= "    <th ";
           $end = "</th>";
