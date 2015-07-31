@@ -14,6 +14,11 @@ class table {
       $this->options['template_engine'] = 'internal';
 
     $this->params = $_REQUEST;
+    $this->options['base_url'] = $_GET;
+  }
+
+  function url($add_params=array()) {
+    return page_url(array_merge($this->options['base_url'], $add_params));
   }
 
   function columns($def=null) {
@@ -178,7 +183,36 @@ class table {
       }
       else {
 	if($level==0) {
-	  $ret[]=array("type"=>"head", "class"=>$k, "rowspan"=>$maxlevel, "value"=>$v['name']);
+	  $el = array(
+	    "type"=>"head",
+	    "class"=>$k,
+	    "rowspan"=>$maxlevel,
+	    "value"=>$v['name']
+	  );
+
+	  $append_url = array();
+	  if(isset($v['sort']) || isset($v['sortable'])) {
+	    $s = isset($v['sort']) ? $v['sort'] : $v['sortable'];
+
+	    $append_url = array('sort' => $k);
+
+	    if(isset($this->params['sort']) && ($this->params['sort'] == $k)) {
+	      if(isset($this->params['sort_dir'])) {
+	        $append_url['sort_dir'] = $this->params['sort_dir'] == 'asc' ? 'desc' : 'asc';
+	        $el['value'] .= $this->params['sort_dir'] == 'asc' ? ' ▲' : ' ▼';
+	      }
+	      else {
+	        $append_url['sort_dir'] = !isset($s['dir']) || $s['dir'] == 'asc' ? 'desc' : 'asc';
+	        $el['value'] .= !isset($s['dir']) || $s['dir'] == 'asc' ? ' ▲' : ' ▼';
+	      }
+	    }
+	  }
+
+	  if(sizeof($append_url)) {
+	    $el['link'] = $this->url($append_url);
+	  }
+
+	  $ret[] = $el;
 	}
 	else {
 	  $ret[]=null;
