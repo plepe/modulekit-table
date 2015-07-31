@@ -18,7 +18,16 @@ class table {
   }
 
   function url($add_params=array()) {
-    return page_url(array_merge($this->options['base_url'], $add_params));
+    if(function_exists("page_url"))
+      return page_url(array_merge($this->options['base_url'], $add_params));
+
+    $str = array();
+    foreach($add_params as $k=>$v)
+      $str[] = urlencode($k) . "=" . urlencode($v);
+
+    $str = implode("&amp;", $str);
+
+    return "?{$str}";
   }
 
   function columns($def=null) {
