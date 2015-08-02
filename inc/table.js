@@ -1,6 +1,5 @@
 function table(def, data, options) {
   this.def = def;
-  this.data = data;
   this.options = options;
   if(!this.options)
     this.options = {};
@@ -8,6 +7,11 @@ function table(def, data, options) {
     this.options.id = (Math.random() + "").replace("0.", "t");
   this.id = this.options.id;
   this.agg = {};
+
+  if(data.length)
+    this.data = new TableData(data);
+  else
+    this.data = data;
 
   if(!this.options)
     this.options = {};
@@ -260,17 +264,28 @@ table.prototype.build_tr = function(rowv, prefix) {
   return tr;
 }
 
-table.prototype.show = function(mode, param) {
+table.prototype.show = function(mode, param, callback) {
+  if(typeof mode == "function") {
+    param = mode;
+    mode = "html";
+  }
+
+  if(typeof param == "function") {
+    callback = param;
+    param = {}
+  }
+
+  if(typeof callback != "function") {
+    alert("table::show() requires callback function!");
+    return;
+  }
+
   if(!mode)
     mode = "html";
   if(!param)
     param = {};
   var result = [];
 
-  var has_aggregate = this.aggregate_check();
-
-  var rows = [];
-  var row = [];
   var groups = [];
   for(var l = 0; l < this.levels(); l++) {
     result.push({
@@ -279,7 +294,6 @@ table.prototype.show = function(mode, param) {
     });
   }
 
-  var data = this.data;
   var sorts = [];
   var has_groups = false;
 
@@ -307,65 +321,22 @@ table.prototype.show = function(mode, param) {
 
   sorts = weight_sort(sorts);
 
-  data.sort(function(sorts, a, b) {
-    for(var si in sorts) {
-      var s = sorts[si];
-      var dir = 1;
-      if(s.dir)
-        dir = (s.dir == 'desc' ? -1 : 1);
+  this.data.set_sort(sorts);
 
-      switch(s.type) {
-        case 'num':
-        case 'numeric':
-          var av = parseFloat(a[s.key]);
-          var bv = parseFloat(b[s.key]);
+  var offset = param.offset ? param.offset : null;
+  var limit = param.limit ? param.limit : null;
 
-          if(av == bv)
-            continue;
+  return this.data.get(offset, limit, this.show1.bind(this, mode, param, callback, result, groups, has_groups));
+}
 
-          if(isNaN(av))
-            return -1;
-          if(isNaN(bv))
-            return 1;
+table.prototype.show1 = function(mode, param, callback, result, groups, has_groups, data) {
+  var rows = [];
+  var row = [];
+  console.log(data);
 
-          var c = (av > bv) ? 1 : -1;
-          return c * dir;
+  var has_aggregate = this.aggregate_check();
 
-        case 'nat':
-          // TODO!
-          break;
-
-        case 'case':
-          var av = (a[s.key] + '').toLowerCase();
-          var bv = (b[s.key] + '').toLowerCase();
-
-          if(av == bv)
-            continue;
-
-          c = (av > bv) ? 1 : -1;
-          return c * dir;
-
-        case 'alpha':
-        default:
-          var av = (a[s.key] + '');
-          var bv = (b[s.key] + '');
-
-          if(av == bv)
-            continue;
-
-          c = (av > bv) ? 1 : -1;
-          return c * dir;
-      }
-    }
-
-    return 0;
-  }.bind(this, sorts));
-
-  var count = data.length;
-  if(param.limit && (param.limit <= data.length))
-    count = param.limit;
-
-  for(var rowid = 0; rowid < count; rowid++) {
+  for(var rowid = 0; rowid < data.length; rowid++) {
     var rowv = data[rowid];
     var tr = this.build_tr(rowv);
 
@@ -429,12 +400,15 @@ table.prototype.show = function(mode, param) {
     });
   }
 
+  var ret;
   if(mode == "html")
-    return this.print_html(result, param);
+    ret = this.print_html(result, param);
   else if(mode == "html-transposed")
-    return this.print_html_transposed(result, param);
+    ret = this.print_html_transposed(result, param);
   else
-    return this.print_csv(result, param);
+    ret = this.print_csv(result, param);
+
+  callback(ret);
 }
 
 table.prototype.print_html = function(result, param) {
