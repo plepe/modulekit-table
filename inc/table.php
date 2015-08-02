@@ -17,7 +17,6 @@ class table {
     if(!array_key_exists('template_engine', $this->options))
       $this->options['template_engine'] = 'internal';
 
-    $this->params = $_REQUEST;
     $this->options['base_url'] = $_GET;
   }
 
@@ -176,7 +175,7 @@ class table {
     }
   }
 
-  function print_headers($level, $def=null, $maxlevel=null) {
+  function print_headers($level, $def=null, $maxlevel=null, $param=null) {
     if($maxlevel===null)
       $maxlevel=$this->levels($def);
     if($def===null)
@@ -190,7 +189,7 @@ class table {
 	  $ret[]=array("type"=>"head", "class"=>$k, "colspan"=>$cols, "value"=>$v['name']);
 	}
 	else
-	  $ret=array_merge($ret, $this->print_headers($level-1, $v['columns'], $maxlevel-1));
+	  $ret=array_merge($ret, $this->print_headers($level-1, $v['columns'], $maxlevel-1, $param));
       }
       elseif(in_array($v['type'], array("group", "hidden"))) {
       }
@@ -209,10 +208,10 @@ class table {
 
 	    $append_url = array('sort' => $k);
 
-	    if(isset($this->params['sort']) && ($this->params['sort'] == $k)) {
-	      if(isset($this->params['sort_dir'])) {
-	        $append_url['sort_dir'] = $this->params['sort_dir'] == 'asc' ? 'desc' : 'asc';
-	        $el['value'] .= $this->params['sort_dir'] == 'asc' ? ' ▲' : ' ▼';
+	    if(isset($param['sort']) && ($param['sort'] == $k)) {
+	      if(isset($param['sort_dir'])) {
+	        $append_url['sort_dir'] = $param['sort_dir'] == 'asc' ? 'desc' : 'asc';
+	        $el['value'] .= $param['sort_dir'] == 'asc' ? ' ▲' : ' ▼';
 	      }
 	      else {
 	        $append_url['sort_dir'] = !isset($s['dir']) || $s['dir'] == 'asc' ? 'desc' : 'asc';
@@ -258,6 +257,9 @@ class table {
   }
 
   function show($mode="html", $param=null) {
+    if($param === null)
+      $param = $_REQUEST;
+
     $has_aggregate=$this->aggregate_check();
     $result = array();
 
@@ -265,7 +267,7 @@ class table {
     $rows = array();
     $groups = array();
     for($l=0; $l<$this->levels(); $l++) {
-      $current_row = $this->print_headers($l);
+      $current_row = $this->print_headers($l, null, null, $param);
 
       $result[] = array("type" => "head{$l}", "values" => $current_row);
     }
@@ -292,7 +294,7 @@ class table {
 
       if(array_key_exists('sortable', $def) &&
 	 $def['sortable'] &&
-         isset($this->params['sort']) && ($this->params['sort'] == $k)) {
+         isset($param['sort']) && ($param['sort'] == $k)) {
 	if($def['sortable'] === true) {
 	  $s = array(
 	    'key'		=> $k,
@@ -306,11 +308,11 @@ class table {
 	}
       }
 
-      if(isset($this->params['sort']) && ($this->params['sort'] == $k)) {
+      if(isset($param['sort']) && ($param['sort'] == $k)) {
 	$s['weight'] = -10000;
 
-	if(isset($this->params['sort_dir']))
-	  $s['dir'] = $this->params['sort_dir'];
+	if(isset($param['sort_dir']))
+	  $s['dir'] = $param['sort_dir'];
       }
 
       if($s !== null)
