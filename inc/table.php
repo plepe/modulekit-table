@@ -396,7 +396,11 @@ class table {
   }
 
   function print_html($result, $param=array()) {
-    $ret = "<table class='table' id='{$this->id}'>";
+    $ret = "";
+
+    $ret .= $this->print_pager($param);
+
+    $ret .= "<table class='table' id='{$this->id}'>";
 
     $odd = false;
     foreach($result as $row) {
@@ -447,6 +451,8 @@ class table {
     $ret .= "<script type='text/javascript'>\n";
     $ret .= "var table_{$this->id} = new table(". json_encode($this->def) . ", null, " . json_encode($this->options) . ")\n";
     $ret .= "</script>\n";
+
+    $ret .= $this->print_pager($param);
 
     return $ret;
   }
@@ -529,6 +535,34 @@ class table {
 
       $ret .= printcsv($to_print, $csv_conf[0], $csv_conf[1]);
     }
+
+    return $ret;
+  }
+
+  function print_pager($param) {
+    if(!isset($param['limit']))
+      $param['limit'] = 10;
+    if(!isset($param['offset']))
+      $param['offset'] = 0;
+    $count = $this->data->count();
+
+    $ret  = "<form method='get' class='pager'>\n";
+    $ret .= "<a href='" . $this->url(array("offset" => 0, "limit" => $param['limit'])) . "'>⏮</a>\n" .
+            "<a href='" . $this->url(array("offset" => max(array($param['offset'] - $param['limit'], 0)), "limit" => $param['limit'])) . "'>⏴</a>\n" .
+            "Page " . round($param['offset'] / $param['limit'] + 1) . " / " . ceil($count / $param['limit']) . "\n" .
+            "(<select name='limit' onchange='this.form.submit()'>\n";
+
+    foreach(array(10=>"10", 25=>"25", 50=>"50", 100=>"100") as $k=>$v) {
+      $ret .= "<option value='{$k}' " .
+              ($param['limit'] == $k ? "selected" : "") .
+              ">{$v}</option>";
+    }
+
+    $ret .= "</select> results per page)\n" .
+            "<a href='" . $this->url(array("offset" => min(array($param['offset'] + $param['limit'], $count - ($count % $param['limit']))), "limit" => $param['limit'])) . "'>⏵</a>\n" .
+            "<a href='" . $this->url(array("offset" => $count - ($count % $param['limit']), "limit" => $param['limit'])) . "'>⏭</a>\n";
+
+    $ret .= "</form>\n";
 
     return $ret;
   }

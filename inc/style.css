@@ -35,3 +35,7 @@ a.table_link {
   height: 100%;
   color: #ffffff;
 }
+form.pager {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
