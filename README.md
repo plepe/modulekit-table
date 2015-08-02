@@ -25,7 +25,9 @@ show_priority   | Defines priority that this column is shown (on narrow browser 
 
 $data
 -----
-A list of assoc. arrays, e.g.:
+Eiter a list of assoc. arrays OR an object of class TableData (see below) OR an object which implements the same interface.
+
+If it is a list of assoc. arrays, this could look like this:
 
 ```json
 [
@@ -118,6 +120,57 @@ $data = table data, array:
 $table = new table($def, $data, array("template_engine"=>"twig"));
 print $table->show();
 ```
+
+TableData
+=========
+__construct($data)
+------------------
+Creates the object. $data is list of associative arrays, as described above.
+
+set_sort($rules)
+----------
+A list of sorts with their criteria (see above) (sort=>true has been expanded). The list has already been sorted by their weight.
+
+set_sort() might be called multiple times, where each call resets the sort options.
+
+set_filter($rules)
+------------
+A list of filter criteria, e.g.:
+```json
+[
+  {
+    'key': 'name',
+    'op': 'contains',
+    'value': 'Schubert',
+  },
+  {
+    'key': 'year',
+    'op': '<=',
+    'value': '1900',
+  },
+]
+```
+
+set_filter() might be called multiple times, where each call resets the filter options.
+
+TODO: define list of operations
+
+count()
+-------
+Return the count of the filtered list.
+
+In JS mode, require an additional parameter callback, which will be passed the result as single parameter.
+
+get($offset=null, $limit=null)
+--------------------------
+Return part of the (filtered and sorted) list.
+
+In JS mode, require an additional parameter callback, which will be passed the rsult as single parameter.
+
+Properties
+----------
+* `current_sort`: the current sort options.
+* `current_filter`: the current filter options.
 
 Testdata
 ========
