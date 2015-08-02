@@ -5,7 +5,7 @@ class TableData {
 
     $this->current_sort = array();
     $this->current_filter = array();
-    $this->current_data = null;
+    $this->current_data = $this->orig_data;
   }
 
   function set_sort($rules) {

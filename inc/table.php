@@ -324,8 +324,6 @@ class table {
 
     $this->data->set_sort($sorts);
 
-    $count = $this->data->count();
-
     $offset = (isset($param['offset']) ? $param['offset'] : null);
     $limit = (isset($param['limit']) ? $param['limit'] : null);
 
