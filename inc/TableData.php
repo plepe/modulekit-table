@@ -5,18 +5,22 @@ class TableData {
 
     $this->current_sort = array();
     $this->current_filter = array();
-    $this->current_data = $this->orig_data;
+    $this->current_data = null;
   }
 
   function set_sort($rules) {
     $this->current_sort = $rules;
+    $this->current_data = null;
   }
 
   function set_filter($data) {
     $this->current_filter = $rules;
+    $this->current_data = null;
   }
 
   function count() {
+    $this->run();
+
     return sizeof($this->current_data);
   }
 
@@ -33,6 +37,9 @@ class TableData {
   }
 
   function run() {
+    if($this->current_data)
+      return;
+
     $this->current_data = $this->orig_data;
 
     // add __index value, to maintain value order on equal entries

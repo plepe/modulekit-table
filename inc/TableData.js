@@ -3,18 +3,22 @@ function TableData(data) {
 
   this.current_sort = [];
   this.current_filter = [];
-  this.current_data = this.orig_data;
+  this.current_data = null;
 }
 
 TableData.prototype.set_sort = function(rules) {
   this.current_sort = rules;
+  this.current_data = null;
 }
 
 TableData.prototype.set_filter = function(rules) {
   this.current_filter = rules;
+  this.current_data = null;
 }
 
 TableData.prototype.count = function(callback) {
+  this.run();
+
   callback(this.current_data.length);
 }
 
@@ -31,6 +35,9 @@ TableData.prototype.get = function(offset, limit, callback) {
 }
 
 TableData.prototype.run = function() {
+  if(this.current_data)
+    return;
+
   this.current_data = this.orig_data.slice();
 
   this.current_data.sort(function(sorts, a, b) {
