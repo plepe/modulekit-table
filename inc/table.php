@@ -328,6 +328,8 @@ class table {
 
     $offset = (isset($param['offset']) ? $param['offset'] : null);
     $limit = (isset($param['limit']) ? $param['limit'] : null);
+    if($limit == 0)
+      $limit = $this->data->count();
 
     $rowid = 0;
     foreach($this->data->get($offset, $limit) as $rowv) {
@@ -545,14 +547,15 @@ class table {
     if(!isset($param['offset']))
       $param['offset'] = 0;
     $count = $this->data->count();
+    $limit = ($param['limit'] == 0 ? $count : $param['limit']);
 
     $ret  = "<form method='get' class='pager'>\n";
     $ret .= "<a href='" . $this->url(array("offset" => 0, "limit" => $param['limit'])) . "'>⏮</a>\n" .
             "<a href='" . $this->url(array("offset" => max(array($param['offset'] - $param['limit'], 0)), "limit" => $param['limit'])) . "'>⏴</a>\n" .
-            "Page " . round($param['offset'] / $param['limit'] + 1) . " / " . ceil($count / $param['limit']) . "\n" .
+            "Page " . round($param['offset'] / $limit + 1) . " / " . ceil($count / $limit) . "\n" .
             "(<select name='limit' onchange='this.form.submit()'>\n";
 
-    foreach(array(10=>"10", 25=>"25", 50=>"50", 100=>"100") as $k=>$v) {
+    foreach(array(10=>"10", 25=>"25", 50=>"50", 100=>"100", 0=>"∞") as $k=>$v) {
       $ret .= "<option value='{$k}' " .
               ($param['limit'] == $k ? "selected" : "") .
               ">{$v}</option>";

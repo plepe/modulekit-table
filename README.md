@@ -82,7 +82,7 @@ show([$mode, [$param]])
 * Mode: 'html' or 'html-transposed' or 'csv'
 * Param: a hash with:
 ** 'offset': start at element n
-** 'limit': only show n elements
+** 'limit': only show n elements (if limit=0, all elements are shown)
 
 In JS mode an additional paramter `callback` is required, which will be called with the resulting table.
 
