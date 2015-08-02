@@ -555,11 +555,15 @@ class table {
             "Page " . round($param['offset'] / $limit + 1) . " / " . ceil($count / $limit) . "\n" .
             "(<select name='limit' onchange='this.form.submit()'>\n";
 
-    foreach(array(10=>"10", 25=>"25", 50=>"50", 100=>"100", 0=>"∞") as $k=>$v) {
+    $limit_options = array(10=>"10", 25=>"25", 50=>"50", 100=>"100", 0=>"∞");
+    foreach($limit_options as $k=>$v) {
       $ret .= "<option value='{$k}' " .
               ($param['limit'] == $k ? "selected" : "") .
               ">{$v}</option>";
     }
+
+    if(!array_key_exists($param['limit'], $limit_options))
+      $ret .= "<option selected>" . htmlspecialchars($param['limit']) . "</option>";
 
     $ret .= "</select> results per page)\n" .
             "<a href='" . $this->url(array("offset" => min(array($param['offset'] + $param['limit'], $count - ($count % $param['limit']))), "limit" => $param['limit'])) . "'>⏵</a>\n" .
