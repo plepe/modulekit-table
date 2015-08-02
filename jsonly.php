@@ -17,7 +17,7 @@ $def = array(
     'sort'		  => true,
   ),
   'BASIS_TYP'		=> array(
-    'name'		  => "Type"
+    'name'		  => "Type",
     'show_priority'       => 1,
   ),
   'BAUJAHR'		=> array(
@@ -53,7 +53,9 @@ print "var def = " . json_encode($def) . ";\n";
 
 var t = new table(def, data);
 //alert(t.columns());
-document.getElementById("content").innerHTML = t.show();
+t.show(function(result) {
+  document.getElementById("content").innerHTML = result;
+});
 </script>
   </body>
 </html>

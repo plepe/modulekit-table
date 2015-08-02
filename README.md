@@ -84,6 +84,8 @@ show([$mode, [$param]])
 ** 'offset': start at element n
 ** 'limit': only show n elements
 
+In JS mode an additional paramter `callback` is required, which will be called with the resulting table.
+
 Properties
 ----------
 `data`: The current data (an object of class TableData or similar)

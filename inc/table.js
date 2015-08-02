@@ -260,7 +260,22 @@ table.prototype.build_tr = function(rowv, prefix) {
   return tr;
 }
 
-table.prototype.show = function(mode, param) {
+table.prototype.show = function(mode, param, callback) {
+  if(typeof mode == "function") {
+    param = mode;
+    mode = "html";
+  }
+
+  if(typeof param == "function") {
+    callback = param;
+    param = {}
+  }
+
+  if(typeof callback != "function") {
+    alert("table::show() requires callback function!");
+    return;
+  }
+
   if(!mode)
     mode = "html";
   if(!param)
@@ -429,12 +444,15 @@ table.prototype.show = function(mode, param) {
     });
   }
 
+  var ret;
   if(mode == "html")
-    return this.print_html(result, param);
+    ret = this.print_html(result, param);
   else if(mode == "html-transposed")
-    return this.print_html_transposed(result, param);
+    ret = this.print_html_transposed(result, param);
   else
-    return this.print_csv(result, param);
+    ret = this.print_csv(result, param);
+
+  callback(ret);
 }
 
 table.prototype.print_html = function(result, param) {
