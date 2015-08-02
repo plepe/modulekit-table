@@ -2,13 +2,17 @@
 class table {
   function __construct($def, $data, $options=array()) {
     $this->def=$def;
-    $this->data=$data;
     $this->mode="html";
     $this->options = $options;
     if(!array_key_exists("id", $this->options))
       $this->options['id'] = "t" . rand();
     $this->id =  $this->options['id'];
     $this->agg=array();
+
+    if(is_array($data))
+      $this->data = new TableData($data);
+    else
+      $this->data = $data;
 
     if(!array_key_exists('template_engine', $this->options))
       $this->options['template_engine'] = 'internal';
@@ -266,7 +270,6 @@ class table {
       $result[] = array("type" => "head{$l}", "values" => $current_row);
     }
 
-    $data = $this->data;
     $sorts = array();
     $has_groups = false;
     foreach($this->def as $k=>$def) {
@@ -319,64 +322,15 @@ class table {
 
     $sorts = weight_sort($sorts);
 
-    // add __index value, to maintain value order on equal entries
-    $i = 0;
-    foreach($data as $k=>$d) {
-      $data[$k]['__index'] = $i++;
-    }
+    $this->data->set_sort($sorts);
 
-    usort($data, function($a, $b) use ($sorts) {
-      foreach($sorts as $s) {
-	$dir = 1;
-	if(array_key_exists('dir', $s))
-	  $dir = $s['dir'] == 'desc' ? -1 : 1;
+    $count = $this->data->count();
 
-	switch(!array_key_exists('type', $s) ? null : $s['type']) {
-	  case 'num':
-	  case 'numeric':
-	    if((float)$a[$s['key']] == (float)$b[$s['key']])
-	      continue;
+    $offset = (isset($param['offset']) ? $param['offset'] : null);
+    $limit = (isset($param['limit']) ? $param['limit'] : null);
 
-	    $c = (float)$a[$s['key']] > (float)$b[$s['key']] ? 1 : -1;
-	    return $c * $dir;
-
-	  case 'nat':
-	    $c = strnatcmp($a[$s['key']], $b[$s['key']]);
-
-	    if($c === 0)
-	      continue;
-
-	    return $c * $dir;
-
-	  case 'case':
-	    $c = strcasecmp($a[$s['key']], $b[$s['key']]);
-
-	    if($c === 0)
-	      continue;
-
-	    return $c * $dir;
-
-	  case 'alpha':
-	  default:
-	    $c = strcmp($a[$s['key']], $b[$s['key']]);
-
-	    if($c === 0)
-	      continue;
-
-	    return $c * $dir;
-	}
-      }
-
-      // equal entries for sorting -> maintain value order
-      return $a['__index'] > $b['__index'];
-    });
-
-    $count = sizeof($data);
-    if(array_key_exists('limit', $param) && ($param['limit'] <= sizeof($data)))
-      $count = $param['limit'];
-
-    for($rowid = 0; $rowid < $count; $rowid++) {
-      $rowv = $data[$rowid];
+    $rowid = 0;
+    foreach($this->data->get($offset, $limit) as $rowv) {
       $tr=$this->build_tr($rowv);
 
       if($has_aggregate) {
@@ -400,6 +354,7 @@ class table {
       $group_value = implode("|", $group_value);
       $groups[$group_value] = $group;
       $rows[$group_value][] = $row;
+      $rowid++;
     }
 
     foreach($rows as $group_value=>$group_rows) {

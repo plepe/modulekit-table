@@ -81,7 +81,12 @@ show([$mode, [$param]])
 
 * Mode: 'html' or 'html-transposed' or 'csv'
 * Param: a hash with:
+** 'offset': start at element n
 ** 'limit': only show n elements
+
+Properties
+----------
+`data`: The current data (an object of class TableData or similar)
 
 Examples
 ========
