@@ -8,7 +8,9 @@ function table(def, data, options) {
   this.id = this.options.id;
   this.agg = {};
 
-  if(data.length)
+  if((typeof data == "undefined") || (data === null))
+    this.data = new TableData([]);
+  else if(data.length)
     this.data = new TableData(data);
   else
     this.data = data;
