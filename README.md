@@ -86,6 +86,30 @@ show([$mode, [$param]])
 
 In JS mode an additional paramter `callback` is required, which will be called with the resulting table.
 
+set_sort(sorts)
+---------------
+Override default sort. E.g.:
+```json
+[
+  {
+    "key": "year",
+    "dir": "asc",
+    "type": "numeric",
+    "weight": 1
+  },
+  {
+    "key": "name",
+    "dir": "desc",
+    "type": "alpha",
+    "weight": 2
+  }
+]
+```
+
+set_filter(filters)
+-------------------
+Set filter options. See below at TableData::set_filter().
+
 Properties
 ----------
 `data`: The current data (an object of class TableData or similar)

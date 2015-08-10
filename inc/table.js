@@ -31,6 +31,14 @@ table.prototype.connect = function() {
   this.resize();
 }
 
+table.prototype.set_sort = function(sorts) {
+  this.data.set_sort(sorts);
+}
+
+table.prototype.set_filter = function(filters) {
+  this.data.set_filter(filters);
+}
+
 table.prototype.resize = function() {
   if(!this.table)
     return;

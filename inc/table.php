@@ -20,6 +20,14 @@ class table {
     $this->options['base_url'] = $_GET;
   }
 
+  function set_filter($filters) {
+    $this->data->set_filter($filters);
+  }
+
+  function set_sort($filters) {
+    $this->data->set_filter($filters);
+  }
+
   function url($add_params=array()) {
     if(function_exists("page_url"))
       return page_url(array_merge($this->options['base_url'], $add_params));
