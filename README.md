@@ -189,7 +189,7 @@ Operations:
 Operation | Description | Example
 ----------|-------------|---------
 `=`       | Equal match | `{ "key": "category", "op": "=", "value", "test" }`
-
+`>`, `>=`, `<`, `<=` | lower/greater comparison | `{ "key", "year", "op": "<", "value": "2000" }`
 
 count()
 -------

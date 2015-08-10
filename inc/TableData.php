@@ -52,10 +52,22 @@ class TableData {
 
 	switch($filter['op']) {
 	  case '=':
+	  case '>':
+	  case '>=':
+	  case '<':
+	  case '>=':
 	    if(!isset($d[$filter['key']]))
 	      return false;
 
-	    if($d[$filter['key']] != $filter['value'])
+	    if(($filter['op'] == "=") && ($d[$filter['key']] != $filter['value']))
+	      return false;
+	    if(($filter['op'] == ">") && ($d[$filter['key']] <= $filter['value']))
+	      return false;
+	    if(($filter['op'] == ">=") && ($d[$filter['key']] < $filter['value']))
+	      return false;
+	    if(($filter['op'] == "<") && ($d[$filter['key']] >= $filter['value']))
+	      return false;
+	    if(($filter['op'] == "<=") && ($d[$filter['key']] > $filter['value']))
 	      return false;
 
 	    break;
