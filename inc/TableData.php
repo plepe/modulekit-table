@@ -13,7 +13,7 @@ class TableData {
     $this->current_data = null;
   }
 
-  function set_filter($data) {
+  function set_filter($rules) {
     $this->current_filter = $rules;
     $this->current_data = null;
   }
@@ -41,6 +41,32 @@ class TableData {
       return;
 
     $this->current_data = $this->orig_data;
+
+    // filter data
+    $filters = &$this->current_filter;
+    $this->current_data = array_filter($this->current_data, function($d) use ($filters) {
+      foreach($filters as $filter) {
+	if(!array_key_exists('key', $filter) || !array_key_exists('op', $filter)) {
+	  print "Invalid filter " . print_r($filter, 1);
+	}
+
+	switch($filter['op']) {
+	  case '=':
+	    if(!isset($d[$filter['key']]))
+	      return false;
+
+	    if($d[$filter['key']] != $filter['value'])
+	      return false;
+
+	    break;
+
+	  default:
+	    print "Invalid filter " . print_r($filter, 1);
+	}
+      }
+
+      return true;
+    });
 
     // add __index value, to maintain value order on equal entries
     $i = 0;

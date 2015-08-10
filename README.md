@@ -184,7 +184,12 @@ A list of filter criteria, e.g.:
 
 set_filter() might be called multiple times, where each call resets the filter options.
 
-TODO: define list of operations
+Operations:
+
+Operation | Description | Example
+----------|-------------|---------
+`=`       | Equal match | `{ "key": "category", "op": "=", "value", "test" }`
+
 
 count()
 -------

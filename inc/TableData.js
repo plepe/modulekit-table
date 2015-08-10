@@ -40,6 +40,33 @@ TableData.prototype.run = function() {
 
   this.current_data = this.orig_data.slice();
 
+  // filter data
+  this.current_data = this.current_data.filter(function(filters, d) {
+    for(var i = 0; i < filters.length; i++) {
+      var filter = filters[i];
+
+      if((!filter.key) || (!filter.op))
+	alert("Invalid filter " + JSON.stringify(filter));
+
+      switch(filter.op) {
+	case '=':
+	  if(!(filter.key in d))
+	    return false;
+
+	  if(d[filter.key] != filter.value)
+	    return false;
+
+	  break;
+
+	default:
+	  alert("Invalid filter " + JSON.stringify(filter));
+      }
+
+      return true;
+    }
+  }.bind(this, this.current_filter));
+
+  // sort data
   this.current_data.sort(function(sorts, a, b) {
     for(var si in sorts) {
       var s = sorts[si];
