@@ -70,6 +70,28 @@ TableData.prototype.run = function() {
 
 	  break;
 
+	case 'regexp':
+	  if(!(filter.key in d))
+	    return false;
+
+	  if(!('flags' in filter))
+	    filter.flags = [];
+	  if(typeof filter.flags == 'string')
+	    filter.flags = filter.flags.split('');
+
+	  var flags = '';
+	  var not = filter.flags.indexOf('!') != -1;
+	  if(filter.flags.indexOf('i') != -1)
+	    flags += 'i';
+
+	  var regexp = new RegExp(filter.value, flags);
+
+	  if((not) && (d[filter.key].match(regexp)))
+	    return false;
+	  if((!not) && (!d[filter.key].match(regexp)))
+	    return false;
+
+	  break;
 	default:
 	  alert("Invalid filter " + JSON.stringify(filter));
       }

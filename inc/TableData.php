@@ -72,6 +72,27 @@ class TableData {
 
 	    break;
 
+	  case "regexp":
+	    if(!isset($d[$filter['key']]))
+	      return false;
+
+	    if(!array_key_exists('flags', $filter))
+	      $filter['flags'] = array();
+	    if(gettype($filter['flags']) == "string")
+	      $filter['flags'] = str_split($filter['flags']);
+
+	    $flags = '';
+	    $not = in_array('!', $filter['flags']);
+	    if(in_array('i', $filter['flags']))
+	      $flags .= 'i';
+
+	    if(($not) && (preg_match("/{$filter['value']}/{$flags}", $d[$filter['key']])))
+	      return false;
+	    if((!$not) && (!preg_match("/{$filter['value']}/{$flags}", $d[$filter['key']])))
+	      return false;
+
+	    break;
+
 	  default:
 	    print "Invalid filter " . print_r($filter, 1);
 	}

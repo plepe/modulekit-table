@@ -190,6 +190,7 @@ Operation | Description | Example
 ----------|-------------|---------
 `=`       | Equal match | `{ "key": "category", "op": "=", "value", "test" }`
 `>`, `>=`, `<`, `<=` | lower/greater comparison | `{ "key", "year", "op": "<", "value": "2000" }`
+`regexp` | Regular expression match. Specify further options with flags: 'i' for case insenstive match, '!' for negated match (return only items NOT matching the expression). | `{ "key": "name", "op": "regexp", "value": "^A", "flags": "i" }` (list all names starting with 'A' or 'a')
 
 count()
 -------
