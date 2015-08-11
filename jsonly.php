@@ -1,6 +1,7 @@
 <?php include "modulekit/loader.php"; /* loads all php-includes */ ?>
 <?php
 Header("Content-Type: text/html; charset=utf-8");
+include "def.php";
 
 $data = array();
 $f = fopen("data.csv", "r");
@@ -10,30 +11,6 @@ while($r = fgetcsv($f)) {
   $data[] = array_combine($headers, $r);
 }
 fclose($f);
-
-$def = array(
-  'BASIS_NAME'		=> array(
-    'name'		  => "Name",
-    'sort'		  => true,
-  ),
-  'BASIS_TYP'		=> array(
-    'name'		  => "Type",
-    'show_priority'       => 1,
-  ),
-  'BAUJAHR'		=> array(
-    'name'		  => "Date of construction",
-    'sort'		  => array(
-      'type'		    => 'numeric',
-      'dir'		    => 'asc',
-      'weight'		    => -1,
-    ),
-  ),
-  'DENKMAL'		=> array(
-    'name'		  => "Is Memorial?",
-    'type'		  => 'group',
-    'format'		  => "Is Memorial? [DENKMAL]",
-  ),
-);
 
 ?>
 <html>
@@ -49,10 +26,13 @@ $def = array(
 <?php
 print "var data = " . json_encode($data) . ";\n";
 print "var def = " . json_encode($def) . ";\n";
+print "var filter = " . json_encode($filter) . ";\n";
 ?>
 
 var t = new table(def, data);
 //alert(t.columns());
+if(filter)
+  t.set_filter(filter);
 t.show(function(result) {
   document.getElementById("content").innerHTML = result;
 });

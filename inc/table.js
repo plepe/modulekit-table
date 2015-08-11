@@ -342,7 +342,6 @@ table.prototype.show = function(mode, param, callback) {
 table.prototype.show1 = function(mode, param, callback, result, groups, has_groups, data) {
   var rows = [];
   var row = [];
-  console.log(data);
 
   var has_aggregate = this.aggregate_check();
 

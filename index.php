@@ -1,6 +1,7 @@
 <?php include "modulekit/loader.php"; /* loads all php-includes */ ?>
 <?php
 Header("Content-Type: text/html; charset=utf-8");
+include "def.php";
 
 $data = array();
 $f = fopen("data.csv", "r");
@@ -11,31 +12,9 @@ while($r = fgetcsv($f)) {
 }
 fclose($f);
 
-$def = array(
-  'BASIS_NAME'		=> array(
-    'name'		  => "Name",
-    'sort'		  => true,
-  ),
-  'BASIS_TYP'		=> array(
-    'name'		  => "Type",
-    'show_priority'       => 1,
-  ),
-  'BAUJAHR'		=> array(
-    'name'		  => "Date of construction",
-    'sort'		  => array(
-      'type'		    => 'numeric',
-      'dir'		    => 'asc',
-      'weight'		    => -1,
-    ),
-  ),
-  'DENKMAL'		=> array(
-    'name'		  => "Is Memorial?",
-    'type'		  => 'group',
-    'format'		  => "Is Memorial? [DENKMAL]",
-  ),
-);
-
 $table = new table($def, $data);
+if(isset($filter))
+  $table->set_filter($filter);
 
 ?>
 <html>
