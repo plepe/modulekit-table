@@ -40,7 +40,9 @@ table.prototype.resize = function() {
     this.def[k].is_hidden = false;
   }
 
-  while(this.table.offsetWidth > window.innerWidth) {
+  var max_width = this.table.parentNode.offsetWidth;
+
+  while(this.table.offsetWidth > max_width) {
     var lowest_priority = 9999999999;
     var lowest_column = null;
 
