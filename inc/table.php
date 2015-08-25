@@ -93,7 +93,10 @@ class table {
       $def=$this->def;
 
     foreach($def as $k=>$v) {
-      if(is_array($data[$k])) {
+      if(!array_key_exists($k, $data)) {
+        $value = "";
+      }
+      elseif(is_array($data[$k])) {
 	$value = htmlspecialchars(json_encode($data[$k]));
       }
       else {
