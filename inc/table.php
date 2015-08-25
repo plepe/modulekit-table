@@ -239,12 +239,13 @@ class table {
   }
 
   function build_tr($rowv, $prefix="") {
+    $tr=array();
+
     switch($this->options['template_engine']) {
       case "twig":
         break;
       case "internal":
       default:
-	$tr=array();
 	foreach($rowv as $k=>$v) {
 	  if(is_array($v))
 	    $tr=array_merge($tr, $this->build_tr($v, "{$prefix}{$k}."));
