@@ -15,6 +15,11 @@ function table(def, data, options) {
   else
     this.data = data;
 
+  for(var k in this.def) {
+    if(!('type' in this.def[k]))
+      this.def[k].type = 'default';
+  }
+
   if(!this.options)
     this.options = {};
   if(!this.options.template_engine)

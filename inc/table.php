@@ -9,6 +9,11 @@ class table {
     $this->id =  $this->options['id'];
     $this->agg=array();
 
+    foreach($this->def as $k=>$def) {
+      if(!array_key_exists('type', $def))
+        $this->def[$k]['type'] = 'default';
+    }
+
     if(is_array($data))
       $this->data = new TableData($data);
     else
