@@ -459,6 +459,10 @@ class table {
     foreach($result as $row) {
       $i = 0;
       foreach($row['values'] as $el) {
+	if($el === null) {
+	  $i++;
+	  continue;
+	}
 
         if(array_key_exists('type', $el) && ($el['type'] == 'head')) {
           $cols[$i] .= "    <th ";
@@ -493,13 +497,14 @@ class table {
 
         $cols[$i] .= "{$end}\n";
 
-        $i++;
+        $i += (array_key_exists('colspan', $el) ? $el['colspan'] : 1);
       }
 
       if($row['type'] == "element")
         $odd = ($odd == "even" ? "odd": "even");
     }
 
+    ksort($cols);
     foreach($cols as $c) {
       $ret .= "  <tr>\n". $c . "  </tr>\n";
     }
