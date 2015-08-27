@@ -131,6 +131,10 @@ table.prototype.print_values = function(data, tr, def) {
   if(!def)
     def = this.def;
 
+  if(typeof data.view == "function") {
+    data = data.view();
+  }
+
   for(var k in def) {
     var v = def[k];
     var value = data[k];

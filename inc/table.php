@@ -92,6 +92,10 @@ class table {
     if($def===null)
       $def=$this->def;
 
+    if(is_object($data)) {
+      $data = $data->view();
+    }
+
     foreach($def as $k=>$v) {
       if(!array_key_exists($k, $data)) {
         $value = "";
