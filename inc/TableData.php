@@ -45,7 +45,10 @@ class TableData {
     // add __index value, to maintain value order on equal entries
     $i = 0;
     foreach($this->current_data as $k=>$d) {
-      $this->current_data[$k]['__index'] = $i++;
+      if(is_object($this->current_data[$k]))
+        $this->current_data[$k]->__index = $i++;
+      else
+        $this->current_data[$k]['__index'] = $i++;
     }
 
     $sorts = &$this->current_sort;
@@ -92,7 +95,9 @@ class TableData {
       }
 
       // equal entries for sorting -> maintain value order
-      return $a['__index'] > $b['__index'];
+      return (is_object($a) ? $a->__index : $a['__index'])
+             >
+             (is_object($b) ? $b->__index : $b['__index']);
     });
 
     return $this->current_data;
