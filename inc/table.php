@@ -472,6 +472,8 @@ class table {
     foreach($result as $row) {
       $i = 0;
       foreach($row['values'] as $el) {
+        if(!array_key_exists($i, $cols))
+          $cols[$i] = "";
 
         if(array_key_exists('type', $el) && ($el['type'] == 'head')) {
           $cols[$i] .= "    <th ";
