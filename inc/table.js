@@ -15,6 +15,11 @@ function table(def, data, options) {
   else
     this.data = data;
 
+  for(var k in this.def) {
+    if(!('type' in this.def[k]))
+      this.def[k].type = 'default';
+  }
+
   if(!this.options)
     this.options = {};
   if(!this.options.template_engine)
@@ -125,6 +130,10 @@ table.prototype.print_values = function(data, tr, def) {
   var ret = [];
   if(!def)
     def = this.def;
+
+  if(typeof data.view == "function") {
+    data = data.view();
+  }
 
   for(var k in def) {
     var v = def[k];

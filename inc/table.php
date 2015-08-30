@@ -9,6 +9,11 @@ class table {
     $this->id =  $this->options['id'];
     $this->agg=array();
 
+    foreach($this->def as $k=>$def) {
+      if(!array_key_exists('type', $def))
+        $this->def[$k]['type'] = 'default';
+    }
+
     if(is_array($data))
       $this->data = new TableData($data);
     else
@@ -87,8 +92,15 @@ class table {
     if($def===null)
       $def=$this->def;
 
+    if(is_object($data)) {
+      $data = $data->view();
+    }
+
     foreach($def as $k=>$v) {
-      if(is_array($data[$k])) {
+      if(!array_key_exists($k, $data)) {
+        $value = "";
+      }
+      elseif(is_array($data[$k])) {
 	$value = htmlspecialchars(json_encode($data[$k]));
       }
       else {
@@ -239,12 +251,13 @@ class table {
   }
 
   function build_tr($rowv, $prefix="") {
+    $tr=array();
+
     switch($this->options['template_engine']) {
       case "twig":
         break;
       case "internal":
       default:
-	$tr=array();
 	foreach($rowv as $k=>$v) {
 	  if(is_array($v))
 	    $tr=array_merge($tr, $this->build_tr($v, "{$prefix}{$k}."));
@@ -459,10 +472,13 @@ class table {
     foreach($result as $row) {
       $i = 0;
       foreach($row['values'] as $el) {
-	if($el === null) {
-	  $i++;
-	  continue;
-	}
+        if($el === null) {
+          $i++;
+          continue;
+        }
+
+        if(!array_key_exists($i, $cols))
+          $cols[$i] = "";
 
         if(array_key_exists('type', $el) && ($el['type'] == 'head')) {
           $cols[$i] .= "    <th ";

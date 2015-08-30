@@ -47,6 +47,9 @@ If it is a list of assoc. arrays, this could look like this:
 ]
 ```
 
+If the individual entries are objects, the function 'view()' will be used to
+get the entries' values.
+
 $options
 --------
 The following options are available:
