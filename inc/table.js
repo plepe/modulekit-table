@@ -274,8 +274,12 @@ table.prototype.build_tr = function(rowv, prefix) {
       for(var k in rowv) {
         var v = rowv[k];
 
-        if(typeof v == "object")
-          tr = tr.concat(this.build_tr(v, prefix + k + "."));
+        if(typeof v == "object") {
+          var merge = this.build_tr(v, prefix + k + ".")
+          for(var k1 in merge) {
+            tr[k1] = merge[k1];
+          }
+        }
         else
           tr["[" + prefix + k + "]"] = v;
       }
