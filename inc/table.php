@@ -253,6 +253,10 @@ class table {
   function build_tr($rowv, $prefix="") {
     $tr=array();
 
+    if(is_object($rowv)) {
+      $rowv = $rowv->view();
+    }
+
     switch($this->options['template_engine']) {
       case "twig":
         break;

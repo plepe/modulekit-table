@@ -257,6 +257,13 @@ table.prototype.build_tr = function(rowv, prefix) {
   if(!prefix)
     prefix = "";
 
+  if(rowv === null)
+    return;
+
+  if(typeof rowv.view == "function") {
+    rowv = rowv.view();
+  }
+
   switch(this.options.template_engine) {
     case "twig":
       break;
