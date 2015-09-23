@@ -15,6 +15,11 @@ function table(def, data, options) {
   else
     this.data = data;
 
+  for(var k in this.def) {
+    if(!('type' in this.def[k]))
+      this.def[k].type = 'default';
+  }
+
   if(!this.options)
     this.options = {};
   if(!this.options.template_engine)
@@ -48,7 +53,9 @@ table.prototype.resize = function() {
     this.def[k].is_hidden = false;
   }
 
-  while(this.table.offsetWidth > window.innerWidth) {
+  var max_width = this.table.parentNode.offsetWidth;
+
+  while(this.table.offsetWidth > max_width) {
     var lowest_priority = 9999999999;
     var lowest_column = null;
 
@@ -131,6 +138,10 @@ table.prototype.print_values = function(data, tr, def) {
   var ret = [];
   if(!def)
     def = this.def;
+
+  if(typeof data.view == "function") {
+    data = data.view();
+  }
 
   for(var k in def) {
     var v = def[k];
@@ -254,6 +265,13 @@ table.prototype.build_tr = function(rowv, prefix) {
   if(!prefix)
     prefix = "";
 
+  if(rowv === null)
+    return;
+
+  if(typeof rowv.view == "function") {
+    rowv = rowv.view();
+  }
+
   switch(this.options.template_engine) {
     case "twig":
       break;
@@ -264,8 +282,12 @@ table.prototype.build_tr = function(rowv, prefix) {
       for(var k in rowv) {
         var v = rowv[k];
 
-        if(typeof v == "object")
-          tr = tr.concat(this.build_tr(v, prefix + k + "."));
+        if(typeof v == "object") {
+          var merge = this.build_tr(v, prefix + k + ".")
+          for(var k1 in merge) {
+            tr[k1] = merge[k1];
+          }
+        }
         else
           tr["[" + prefix + k + "]"] = v;
       }
