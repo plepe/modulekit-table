@@ -1,7 +1,7 @@
 <?php
 $id="modulekit-table";
 
-$depend=array("hooks", "weight_sort");
+$depend=array("hooks", "weight_sort", "opt_sort");
 
 $include=array(
   'php'=>array(
