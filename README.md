@@ -155,6 +155,9 @@ $table = new table($def, $data, array("template_engine"=>"twig"));
 print $table->show();
 ```
 
+Notes:
+* additionally to the current object properties as variables, the current object is also available as variable '_'. E.g. `{{ _.name }}` equals `{{ name }}`. The advantage is, that you can apply filters to the whole object, e.g. `{{ _|json_encode }}`.
+
 TableData
 =========
 __construct($data)

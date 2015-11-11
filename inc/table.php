@@ -104,6 +104,10 @@ class table {
       $data = $data->view();
     }
 
+    if(!array_key_exists('_', $data)) {
+      $data['_'] = &$data;
+    }
+
     foreach($def as $k=>$v) {
       if(!array_key_exists($k, $data)) {
         $value = "";
