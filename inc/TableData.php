@@ -13,7 +13,7 @@ class TableData {
     $this->current_data = null;
   }
 
-  function set_filter($data) {
+  function set_filter($rules) {
     $this->current_filter = $rules;
     $this->current_data = null;
   }
