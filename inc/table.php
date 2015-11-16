@@ -37,11 +37,7 @@ class table {
     if(function_exists("page_url"))
       return page_url(array_merge($this->options['base_url'], $add_params));
 
-    $str = array();
-    foreach($add_params as $k=>$v)
-      $str[] = urlencode($k) . "=" . urlencode($v);
-
-    $str = implode("&amp;", $str);
+    $str = htmlspecialchars(http_build_query($add_params));
 
     return "?{$str}";
   }
@@ -248,7 +244,7 @@ class table {
 	  }
 
 	  if(sizeof($append_url)) {
-	    $el['link'] = $this->url($append_url);
+	    $el['link'] = $this->url(array_merge($param, $append_url));
 	  }
 
 	  $ret[] = $el;
