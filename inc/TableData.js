@@ -38,6 +38,6 @@ TableData.prototype.run = function() {
   if(this.current_data)
     return;
 
-  this.current_sort = opt_sort(this.orig_data, this.current_sort);
-  return this.current_sort;
+  this.current_data = opt_sort(this.orig_data, this.current_sort);
+  return this.current_data;
 }
