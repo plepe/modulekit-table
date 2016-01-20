@@ -86,6 +86,7 @@ show([$mode, [$param]])
 * Param: a hash with:
 ** 'offset': start at element n
 ** 'limit': only show n elements
+** 'show_table_header': whether the table header should be shown (true/false, default true)
 
 In JS mode an additional paramter `callback` is required, which will be called with the resulting table.
 

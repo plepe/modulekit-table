@@ -426,6 +426,11 @@ class table {
 
     $odd = false;
     foreach($result as $row) {
+      if(array_key_exists('show_table_header', $param) &&
+	 $param['show_table_header'] == false)
+	if(preg_match("/^head/", $row['type']))
+	  continue;
+
       switch($row['type']) {
         case "element":
           $ret .= "  <tr class='". ($odd ? "odd" : "even") ."'>\n";
@@ -484,6 +489,12 @@ class table {
     $odd = "even";
     foreach($result as $row) {
       $i = 0;
+
+      if(array_key_exists('show_table_header', $param) &&
+	 $param['show_table_header'] == false)
+	if(preg_match("/^head/", $row['type']))
+	  continue;
+
       foreach($row['values'] as $el) {
         if($el === null) {
           $i++;

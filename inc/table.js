@@ -449,6 +449,11 @@ table.prototype.print_html = function(result, param) {
   for(var rowid = 0; rowid < result.length; rowid++) {
     var row = result[rowid];
 
+    if(('show_table_header' in param) &&
+       param.show_table_header == false)
+      if(row.type.match(/^head/))
+	continue;
+
     switch(row['type']) {
       case "element":
         ret += "  <tr class='"+ (odd ? "odd" : "even") +"'>\n";
@@ -502,6 +507,11 @@ table.prototype.print_html_transposed = function(result, param) {
   for(var rowid = 0; rowid < result.length; rowid++) {
     var row = result[rowid];
     var i = 0;
+
+    if(('show_table_header' in param) &&
+       param.show_table_header == false)
+      if(row.type.match(/^head/))
+	continue;
 
     for(var elid = 0; elid < row['values'].length; elid++) {
       if(!cols[i])
