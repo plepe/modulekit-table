@@ -91,6 +91,15 @@ class table {
     }
   }
 
+  function escape($d, $coldef) {
+    if(array_key_exists('auto_escape', $coldef)) {
+      if($coldef['auto_escape'] === false)
+	return $d;
+    }
+
+    return htmlspecialchars($d);
+  }
+
   function print_values($data, $tr, $def=null) {
     $ret=array();
     if($def===null)
@@ -109,10 +118,10 @@ class table {
         $value = "";
       }
       elseif(is_array($data[$k])) {
-	$value = htmlspecialchars(json_encode($data[$k]));
+	$value = $this->escape(json_encode($data[$k]), $v);
       }
       else {
-	$value=htmlspecialchars($data[$k]);
+	$value = $this->escape($data[$k], $v);
       }
 
       if($v['type']=="multiple")
