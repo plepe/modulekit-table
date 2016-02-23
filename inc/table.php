@@ -435,6 +435,9 @@ class table {
         case "element":
           $ret .= "  <tr class='". ($odd ? "odd" : "even") ."'>\n";
           break;
+        case "group":
+          $ret .= "  <tr class='table_col_group'>\n";
+          break;
         default:
           $ret .= "  <tr class='{$row['type']}'>\n";
       }
