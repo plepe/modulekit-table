@@ -118,7 +118,7 @@ class table {
       if($v['type']=="multiple")
 	$ret=array_merge($ret, $this->print_values($data[$k], $tr, $v['columns']));
       else {
-	if($v['format'])
+	if(isset($v['format']))
 	  $value = $this->replace($data, $tr, $v['format']);
 
 	$r=array("class"=>$k, "value"=>$value);
@@ -219,7 +219,7 @@ class table {
 	    "type"=>"head",
 	    "class"=>$k,
 	    "rowspan"=>$maxlevel,
-	    "value"=>$v['name']
+	    "value"=> isset($v['name']) ? $v['name'] : ''
 	  );
 
 	  $append_url = array();
@@ -457,7 +457,9 @@ class table {
         if(array_key_exists('rowspan', $el))
           $ret .= "rowspan='{$el['rowspan']}' ";
 
-        $ret .= "class='{$el['class']}'>";
+        if(isset($el['class']))
+          $ret .= "class='{$el['class']}' ";
+        $ret .= ">";
 
         if(array_key_exists("link", $el))
           $ret .= "<a class='table_link' href='" . $el['link'] . "'>" . $el['value'] . "</a>";
