@@ -14,9 +14,9 @@ table.table td {
   border: 1px solid grey;
   padding: 2px;
 }
-tr.group,
-th.group,
-td.group {
+tr.table_col_group,
+th.table_col_group,
+td.table_col_group {
   background: #a0a0a0;
 }
 tr.odd,
