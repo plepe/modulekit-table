@@ -120,6 +120,9 @@ class table {
 
 	$r=array("class"=>$class, "value"=>$value);
 
+        if(array_key_exists('html_attributes', $v))
+          $r['html_attributes'] = $v['html_attributes'];
+
 	if(array_key_exists('type', $v))
 	  $r['type'] = $v['type'];
 
@@ -144,7 +147,12 @@ class table {
       if($v['type']=="multiple")
 	$ret=array_merge($ret, $this->print_aggregate($agg[$k], $v['columns']));
       else {
-	$ret[]=array("class"=>$k, "value"=>$value);
+        $r = array("class"=>$k, "value"=>$value);
+
+        if(array_key_exists('html_attributes', $v))
+          $r['html_attributes'] = $v['html_attributes'];
+
+	$ret[] = $r;
       }
     }
 
@@ -218,6 +226,9 @@ class table {
 	    "rowspan"=>$maxlevel,
 	    "value"=>$v['name']
 	  );
+
+          if(array_key_exists('html_attributes', $v))
+            $el['html_attributes'] = $v['html_attributes'];
 
 	  $append_url = array();
 	  if((isset($v['sort']) && $v['sort']) || (isset($v['sortable']) && $v['sortable'])) {
@@ -444,7 +455,13 @@ class table {
         if(array_key_exists('rowspan', $el))
           $ret .= "rowspan='{$el['rowspan']}' ";
 
-        $ret .= "class='{$el['class']}'>";
+        if(isset($el['class']))
+          $ret .= "class='{$el['class']}' ";
+
+        if(isset($el['html_attributes']))
+          $ret .= $el['html_attributes'] . " ";
+
+        $ret .= ">";
 
         if(array_key_exists("link", $el))
           $ret .= "<a class='table_link' href='" . $el['link'] . "'>" . $el['value'] . "</a>";
@@ -504,7 +521,12 @@ class table {
             $cols[$i] .= " {$row['type']}";
         }
 
-        $cols[$i] .= "'>";
+        $cols[$i] .= "' ";
+
+        if(isset($el['html_attributes']))
+          $cols[$i] .= $el['html_attributes'] . " ";
+
+        $cols[$i] .= ">";
 
         if(array_key_exists("link", $el))
           $cols[$i] .= "<a class='table_link' href='" . $el['link'] . "'>" . $el['value'] . "</a>";

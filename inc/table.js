@@ -152,6 +152,9 @@ table.prototype.print_values = function(data, tr, def) {
 
       var r = { "class": _class, "value": value };
 
+      if(v.html_attributes)
+        r.html_attributes = v.html_attributes;
+
       if(v.type)
         r.type = v.type;
 
@@ -176,11 +179,17 @@ table.prototype.print_aggregate = function(agg, def) {
 
     if(v.type == "multiple")
       ret = ret.concat(this.print_aggregate(agg[k], v.columns));
-    else
-      ret.push({
+    else {
+      var r = {
         "class": k,
         "value": value
-      });
+      };
+
+      if(v.html_attributes)
+        r.html_attributes = v.html_attributes;
+
+      ret.push(r);
+    }
   }
 
   return ret;
@@ -248,8 +257,14 @@ table.prototype.print_headers = function(level, def, maxlevel) {
     else if((v.type == "group") || (v.type == "hidden")) {
     }
     else {
-      if(level == 0)
-        ret.push({ "type": "head", "class": k, "rowspan": maxlevel, "value": v.name });
+      if(level == 0) {
+        var r = { "type": "head", "class": k, "rowspan": maxlevel, "value": v.name };
+
+        if(v.html_attributes)
+          r.html_attributes = v.html_attributes;
+
+        ret.push(r);
+      }
       else
         ret.push(null);
     }
@@ -461,7 +476,12 @@ table.prototype.print_html = function(result, param) {
       if(el.rowspan)
         ret += "rowspan='"+ el['rowspan'] +"' ";
 
-      ret += "class='"+ el['class'] +"'>";
+      ret += "class='"+ el['class'] +"'";
+
+      if(el.html_attributes)
+        ret += el.html_attributes + " ";
+
+      ret += ">";
 
       if(el.link)
         ret += "<a class='table_link' href='" + el['link'] + "'>" + el['value'] + "</a>";
@@ -520,7 +540,12 @@ table.prototype.print_html_transposed = function(result, param) {
           cols[i] += " " + row['type'];
       }
 
-      cols[i] += "'>";
+      cols[i] += "' ";
+
+      if(el.html_attributes)
+        cols[i] += el.html_attributes + " ";
+
+      cols[i] += ">";
 
       if(el.link)
         cols[i] += "<a class='table_link' href='" + el['link'] + "'>" + el['value'] + "</a>";
