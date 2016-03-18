@@ -23,6 +23,7 @@ format          | Defines an output format for this field (see below under "Form
 sort            | Sort by this value. Either boolean (default: false: no sort) or an assoc. array further defining sort criteria: "type": "alpha" (default), "num"/"numeric", "case" (alphabetic, but case insenstive), "nat" (natural sort algorithm); "dir": "asc" (default), "desc"; "weight": defines order of sorting, if there are several sort options (the lower the value the more important; default 0).
 sortable        | Like sort, but does not sort by this column by default.
 show_priority   | Defines priority that this column is shown (on narrow browser windows, only columns with high priority is shown). If no 'show_priority' is defined / is null, the column will always be shown.
+html_attributes | Additional html attributes which will be added to the column, e.g. `style='background: black;'`.
 
 $data
 -----
