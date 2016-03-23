@@ -262,9 +262,10 @@ class table {
 	      $append_url['sort_dir'] = isset($s['dir']) && $s['dir'] == 'desc' ? 'desc' : 'asc';
 	    }
 	  }
-	  $append_url['offset'] = 0;
 
 	  if(sizeof($append_url)) {
+            $append_url['offset'] = 0;
+
 	    $el['link'] = $this->url(array_merge($param, $append_url));
 	  }
 
