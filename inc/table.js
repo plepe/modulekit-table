@@ -357,7 +357,10 @@ table.prototype.show = function(mode, param, callback) {
       }
       else {
         var s = def.sort;
-        s.key = k;
+
+        if(!s.key)
+          s.key = k;
+
         sorts.push(s);
       }
     }

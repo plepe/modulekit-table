@@ -335,7 +335,9 @@ class table {
 	elseif($def['sort'] === false); // nothing
 	else {
 	  $s = $def['sort'];
-	  $s['key'] = $k;
+
+          if(!array_key_exists('key', $s))
+            $s['key'] = $k;
 	}
       }
 
@@ -351,7 +353,9 @@ class table {
 	}
 	else {
 	  $s = $def['sortable'];
-	  $s['key'] = $k;
+
+          if(!array_key_exists('key', $s))
+            $s['key'] = $k;
 	}
       }
 
