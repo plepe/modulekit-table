@@ -145,7 +145,12 @@ table.prototype.print_values = function(data, tr, def) {
       if(v.format)
         value = this.replace(data, tr, v.format);
 
-      var r = { "class": k, "value": value };
+      var _class = k
+      if (v.class) {
+        _class += ' ' + this.replace(data, tr, v.class);
+      }
+
+      var r = { "class": _class, "value": value };
 
       if(v.type)
         r.type = v.type;

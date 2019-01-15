@@ -113,7 +113,12 @@ class table {
 	if($v['format'])
 	  $value = $this->replace($data, $tr, $v['format']);
 
-	$r=array("class"=>$k, "value"=>$value);
+        $class = "$k";
+        if (array_key_exists('class', $v)) {
+          $class .= " " . $this->replace($data, $tr, $v['class']);
+        }
+
+	$r=array("class"=>$class, "value"=>$value);
 
 	if(array_key_exists('type', $v))
 	  $r['type'] = $v['type'];
