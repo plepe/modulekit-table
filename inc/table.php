@@ -121,7 +121,7 @@ class table {
 	$r=array("class"=>$class, "value"=>$value);
 
         if(array_key_exists('html_attributes', $v))
-          $r['html_attributes'] = $v['html_attributes'];
+          $r['html_attributes'] = $this->replace($data, $tr, $v['html_attributes']);
 
 	if(array_key_exists('type', $v))
 	  $r['type'] = $v['type'];
