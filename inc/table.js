@@ -148,7 +148,7 @@ table.prototype.print_values = function(data, tr, def) {
       var r = { "class": k, "value": value };
 
       if(v.html_attributes)
-        r.html_attributes = v.html_attributes;
+        r.html_attributes = this.replace(data, tr, v.html_attributes);
 
       if(v.type)
         r.type = v.type;
