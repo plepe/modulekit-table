@@ -116,7 +116,12 @@ table.prototype.levels = function(def) {
 table.prototype.replace = function(data, tr, format) {
   switch(this.options.template_engine) {
     case "twig":
-      return twig_render_custom(format, data);
+      try {
+        return twig_render_custom(format, data);
+      }
+      catch (e) {
+        return '#ERROR#'
+      }
     case "internal":
     default:
       var result = format;
