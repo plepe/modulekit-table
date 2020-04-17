@@ -140,6 +140,9 @@ table.prototype.print_values = function(data, tr, def) {
     data = data.view();
   }
 
+  // clone data to make sure, that data does not get changed by functions
+  data = JSON.parse(JSON.stringify(data));
+
   for(var k in def) {
     var v = def[k];
     var value = data[k];
