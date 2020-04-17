@@ -260,7 +260,7 @@ table.prototype.aggregate_values = function(data, agg, def) {
   }
 }
 
-table.prototype.print_headers = function(level, def, maxlevel) {
+table.prototype.print_headers = function(level, def, maxlevel, param) {
   if(maxlevel === null)
     maxlevel = this.levels(def);
   if(!def)
@@ -276,7 +276,7 @@ table.prototype.print_headers = function(level, def, maxlevel) {
         ret.push({ "type": "head", "class": k, "colspan": cols, "value": v.name });
       }
       else
-        ret = ret.concat(this.print_headers(level - 1, v.columns, maxlevel -1));
+        ret = ret.concat(this.print_headers(level - 1, v.columns, maxlevel -1, param));
     }
     else if((v.type == "group") || (v.type == "hidden")) {
     }
@@ -370,7 +370,7 @@ table.prototype.show = function(mode, param, callback) {
   for(var l = 0; l < this.levels(); l++) {
     result.push({
       'type': 'head' + l,
-      'values': this.print_headers(l)
+      'values': this.print_headers(l, null, null, param)
     });
   }
 
@@ -379,20 +379,50 @@ table.prototype.show = function(mode, param, callback) {
 
   for(var k in this.def) {
     var def = this.def[k];
+    var s = null
 
     if(def.sort) {
       if(def.sort === true) {
-        sorts.push({
+        s = {
           key: k,
           type: "alpha",
           weight: 0
-        });
+        }
+      }
+      else if (def.sort === false) {
+        // nothing
       }
       else {
-        var s = def.sort;
+        s = def.sort;
         s.key = k;
         sorts.push(s);
       }
+    }
+
+    if (def.sortable && param.sort && param.sort === k) {
+      if (def.sortable === true) {
+        s = {
+          key: k,
+          type: 'alpha',
+          weight: 0
+        }
+      }
+      else {
+        s = JSON.parse(JSON.stringify(def.sortable))
+        s.key = k
+      }
+    }
+
+    if (param.sort && param.sort === k) {
+      s.weight = -10000
+
+      if (param.sort_dir) {
+        s.dir = param.sort_dir
+      }
+    }
+
+    if (s) {
+      sorts.push(s)
     }
 
     if(def.type && (def.type == "group"))
