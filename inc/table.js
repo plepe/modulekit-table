@@ -25,6 +25,8 @@ function table(def, data, options) {
   if(!this.options.template_engine)
     this.options.template_engine = "internal";
 
+  this.options.base_url = location.search
+
   window.setTimeout(this.connect.bind(this), 1);
   this.show_column_style = document.createElement("style");
   document.head.appendChild(this.show_column_style);
@@ -34,6 +36,20 @@ function table(def, data, options) {
 table.prototype.connect = function() {
   this.table = document.getElementById(this.id);
   this.resize();
+}
+
+table.prototype.url = function (add_params = {}) {
+  let addr = {}
+
+  if (location.search.substr(0, 1) === '?') {
+    addr = page_resolve_url_params(location.search)
+  }
+
+  for (let k in add_params) {
+    addr[k] = add_params[k]
+  }
+
+  return page_url(addr)
 }
 
 table.prototype.resize = function() {
@@ -270,6 +286,29 @@ table.prototype.print_headers = function(level, def, maxlevel) {
 
         if(v.html_attributes)
           r.html_attributes = v.html_attributes;
+
+        let append_url = {};
+        if (v.sort || v.sortable) {
+          let s = v.sort || v.sortable;
+
+          append_url.sort = k;
+
+          if (param.sort && param.sort === k) {
+            if (param.sort_dir) {
+              append_url.sort_dir = param.sort_dir === 'asc' ? 'desc' : 'asc';
+              r.value += param.sort_dir === 'asc' ? ' ▲' : ' ▼';
+            } else {
+              append_url.sort_dir = !('dir' in s) || s.dir == 'asc' ? 'desc' : 'asc';
+              r.value += param.sort_dir === 'asc' ? ' ▲' : ' ▼';
+            }
+          } else {
+            append_url.sort_dir = s.dir && s.dir == 'desc' ? 'desc' : 'asc';
+          }
+        }
+
+        if (Object.values(append_url).length) {
+          r.link = this.url(append_url);
+        }
 
         ret.push(r);
       }
