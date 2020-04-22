@@ -290,6 +290,9 @@ table.prototype.print_headers = function(level, def, maxlevel, param) {
         let append_url = {};
         if (v.sort || v.sortable) {
           let s = v.sort || v.sortable;
+          if (s === true) {
+            s = {}
+          }
 
           append_url.sort = k;
 
