@@ -517,7 +517,7 @@ class table {
   }
 
   function print_html_transposed($result, $param=array()) {
-    $ret = "<table class='table transposed'>";
+    $ret = "<table class='table transposed' id='{$this->id}'>";
     $cols = array();
 
     $odd = "even";
